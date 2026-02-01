@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 
 type Theme = 'light' | 'dark'
@@ -78,6 +78,30 @@ const a11yChecklist = [
   'Interactive elements are at least 44px tall.',
 ]
 
+function toCssVarName(tokenName: string) {
+  return `--lg-${tokenName.replaceAll('.', '-')}`
+}
+
+async function copyToClipboard(text: string) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text)
+    return
+  }
+
+  const textarea = document.createElement('textarea')
+  textarea.value = text
+  textarea.setAttribute('readonly', 'true')
+  textarea.style.position = 'fixed'
+  textarea.style.top = '-9999px'
+  textarea.style.left = '-9999px'
+  document.body.appendChild(textarea)
+
+  textarea.select()
+  document.execCommand('copy')
+
+  document.body.removeChild(textarea)
+}
+
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') {
     return 'dark'
@@ -93,16 +117,36 @@ function getInitialTheme(): Theme {
 
 function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const [toast, setToast] = useState<string | null>(null)
+  const toastTimer = useRef<number | null>(null)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     window.localStorage.setItem('lg-theme', theme)
   }, [theme])
 
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) {
+        window.clearTimeout(toastTimer.current)
+      }
+    }
+  }, [])
+
   const toggleThemeLabel = useMemo(
     () => (theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'),
     [theme],
   )
+
+  const announce = (message: string) => {
+    setToast(message)
+    if (toastTimer.current) {
+      window.clearTimeout(toastTimer.current)
+    }
+    toastTimer.current = window.setTimeout(() => {
+      setToast(null)
+    }, 2200)
+  }
 
   return (
     <div className="app">
@@ -197,6 +241,31 @@ function App() {
               <article className="token-card" key={token.name}>
                 <div className="token-name">{token.name}</div>
                 <div className="token-value">{token.value}</div>
+                <div className="token-actions">
+                  <button
+                    className="token-copy"
+                    type="button"
+                    aria-label={`Copy value for ${token.name}`}
+                    onClick={async () => {
+                      await copyToClipboard(token.value)
+                      announce(`Copied ${token.name} value`)
+                    }}
+                  >
+                    Copy value
+                  </button>
+                  <button
+                    className="token-copy subtle"
+                    type="button"
+                    aria-label={`Copy CSS snippet for ${token.name}`}
+                    onClick={async () => {
+                      const css = `${toCssVarName(token.name)}: ${token.value};`
+                      await copyToClipboard(css)
+                      announce(`Copied ${token.name} CSS`)
+                    }}
+                  >
+                    Copy CSS
+                  </button>
+                </div>
                 <p className="token-description">{token.description}</p>
               </article>
             ))}
@@ -284,6 +353,10 @@ function App() {
           <a href="#top">Back to top</a>
         </div>
       </footer>
+
+      <div className="toast" role="status" aria-live="polite">
+        {toast}
+      </div>
     </div>
   )
 }
