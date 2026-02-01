@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Contrast helper widget for quick WCAG checks on token pairs.
 - 2026-02-01: Motion toggle (reduced/full) plus reduced-motion hover behavior (no lift).
 - 2026-02-01: Keyboard demo — focus the preview search with `/` or `Ctrl+K`.
 - 2026-02-01: Keyboard UX polish (skip link + focus-visible rings) and component usage snippets.
@@ -30,4 +31,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add reduced-motion demos (lift → opacity) and a “contrast check” note per token.
+- Add a small per-token “used by” mapping (tokens → components) to prevent drift.

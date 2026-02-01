@@ -67,6 +67,77 @@ function toCssVarName(tokenName: string) {
   return `--lg-${tokenName.replaceAll('.', '-')}`
 }
 
+type Rgba = { r: number; g: number; b: number; a: number }
+
+function clamp01(value: number) {
+  return Math.max(0, Math.min(1, value))
+}
+
+function parseHexColor(input: string): Rgba | null {
+  const hex = input.replace('#', '').trim()
+  if (hex.length === 3) {
+    const r = Number.parseInt(hex[0] + hex[0], 16)
+    const g = Number.parseInt(hex[1] + hex[1], 16)
+    const b = Number.parseInt(hex[2] + hex[2], 16)
+    return { r, g, b, a: 1 }
+  }
+  if (hex.length === 6) {
+    const r = Number.parseInt(hex.slice(0, 2), 16)
+    const g = Number.parseInt(hex.slice(2, 4), 16)
+    const b = Number.parseInt(hex.slice(4, 6), 16)
+    return { r, g, b, a: 1 }
+  }
+  return null
+}
+
+function parseRgbColor(input: string): Rgba | null {
+  const match = input
+    .trim()
+    .match(/^rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)(?:\s*,\s*([0-9.]+)\s*)?\)$/i)
+  if (!match) return null
+  const r = Number(match[1])
+  const g = Number(match[2])
+  const b = Number(match[3])
+  const a = match[4] === undefined ? 1 : clamp01(Number(match[4]))
+  if (![r, g, b, a].every((n) => Number.isFinite(n))) return null
+  return { r, g, b, a }
+}
+
+function parseColor(input: string): Rgba | null {
+  if (input.trim().startsWith('#')) return parseHexColor(input)
+  if (input.trim().startsWith('rgb')) return parseRgbColor(input)
+  return null
+}
+
+function compositeOver(base: Rgba, overlay: Rgba): Rgba {
+  const a = overlay.a + base.a * (1 - overlay.a)
+  if (a <= 0) return { r: 0, g: 0, b: 0, a: 0 }
+  const r = (overlay.r * overlay.a + base.r * base.a * (1 - overlay.a)) / a
+  const g = (overlay.g * overlay.a + base.g * base.a * (1 - overlay.a)) / a
+  const b = (overlay.b * overlay.a + base.b * base.a * (1 - overlay.a)) / a
+  return { r, g, b, a }
+}
+
+function srgbToLinear(c: number) {
+  const v = c / 255
+  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+}
+
+function relativeLuminance(color: Rgba) {
+  const r = srgbToLinear(color.r)
+  const g = srgbToLinear(color.g)
+  const b = srgbToLinear(color.b)
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+function contrastRatio(fg: Rgba, bg: Rgba) {
+  const l1 = relativeLuminance(fg)
+  const l2 = relativeLuminance(bg)
+  const lighter = Math.max(l1, l2)
+  const darker = Math.min(l1, l2)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
 async function copyToClipboard(text: string) {
   if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(text)
@@ -119,6 +190,8 @@ function App() {
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<number | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
+  const [contrastFg, setContrastFg] = useState('text')
+  const [contrastBg, setContrastBg] = useState('glass-bg-soft')
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -193,6 +266,99 @@ function App() {
       setToast(null)
     }, 2200)
   }
+
+  const contrastOptions = useMemo(() => {
+    const baseDefaults =
+      theme === 'light'
+        ? {
+            bgSolid: '#e9f1f7',
+            text: '#1d2936',
+            textMuted: '#5f6c7d',
+            accent: '#2666ff',
+            accentContrast: '#f6f7ff',
+            glassBg: 'rgba(255, 255, 255, 0.6)',
+            glassBgSoft: 'rgba(255, 255, 255, 0.75)',
+          }
+        : {
+            bgSolid: '#0b111a',
+            text: '#f4f8fb',
+            textMuted: '#b3c1d3',
+            accent: '#7ee5ff',
+            accentContrast: '#071722',
+            glassBg: 'rgba(255, 255, 255, 0.08)',
+            glassBgSoft: 'rgba(255, 255, 255, 0.12)',
+          }
+
+    const cssVar = (name: string, fallback: string) => {
+      try {
+        const value = window
+          .getComputedStyle(document.documentElement)
+          .getPropertyValue(name)
+          .trim()
+        return value || fallback
+      } catch {
+        return fallback
+      }
+    }
+
+    const bgSolid = cssVar('--bg-solid', baseDefaults.bgSolid)
+    const options = [
+      { id: 'text', label: 'Text', value: cssVar('--text', baseDefaults.text) },
+      {
+        id: 'text-muted',
+        label: 'Text muted',
+        value: cssVar('--text-muted', baseDefaults.textMuted),
+      },
+      { id: 'accent', label: 'Accent', value: cssVar('--accent', baseDefaults.accent) },
+      {
+        id: 'accent-contrast',
+        label: 'Accent contrast',
+        value: cssVar('--accent-contrast', baseDefaults.accentContrast),
+      },
+      { id: 'glass-bg', label: 'Glass BG', value: cssVar('--glass-bg', baseDefaults.glassBg) },
+      {
+        id: 'glass-bg-soft',
+        label: 'Glass BG soft',
+        value: cssVar('--glass-bg-soft', baseDefaults.glassBgSoft),
+      },
+      { id: 'accent-aqua', label: 'Token accent.aqua', value: '#7ee5ff' },
+      { id: 'accent-coral', label: 'Token accent.coral', value: '#ff9f7a' },
+      { id: 'bg-solid', label: 'BG solid', value: bgSolid },
+    ]
+
+    return { bgSolid, options }
+  }, [theme])
+
+  const contrastResult = useMemo(() => {
+    const bgSolidParsed = parseColor(contrastOptions.bgSolid)
+    if (!bgSolidParsed) return null
+
+    const get = (id: string) =>
+      contrastOptions.options.find((option) => option.id === id)?.value
+
+    const fgRaw = get(contrastFg)
+    const bgRaw = get(contrastBg)
+    if (!fgRaw || !bgRaw) return null
+
+    const fgParsed = parseColor(fgRaw)
+    const bgParsed = parseColor(bgRaw)
+    if (!fgParsed || !bgParsed) return null
+
+    const fg = fgParsed.a < 1 ? compositeOver(bgSolidParsed, fgParsed) : fgParsed
+    const bg = bgParsed.a < 1 ? compositeOver(bgSolidParsed, bgParsed) : bgParsed
+    const ratio = contrastRatio(fg, bg)
+
+    return {
+      ratio,
+      ratioLabel: `${ratio.toFixed(2)}:1`,
+      normalAA: ratio >= 4.5,
+      normalAAA: ratio >= 7,
+      largeAA: ratio >= 3,
+      largeAAA: ratio >= 4.5,
+      fgRaw,
+      bgRaw,
+    }
+  }, [contrastBg, contrastFg, contrastOptions])
 
   return (
     <div className="app">
@@ -441,6 +607,71 @@ function App() {
             <p>
               Glass effects should never reduce clarity. These defaults keep
               text legible and interaction discoverable.
+            </p>
+          </div>
+          <div className="glass-card contrast">
+            <div className="contrast-header">
+              <h3>Contrast helper</h3>
+              <p className="contrast-subtitle">
+                Quick WCAG contrast check for common foreground/background pairs.
+              </p>
+            </div>
+            <div className="contrast-controls">
+              <label className="contrast-field">
+                <span>Foreground</span>
+                <select value={contrastFg} onChange={(e) => setContrastFg(e.target.value)}>
+                  {contrastOptions.options.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="contrast-field">
+                <span>Background</span>
+                <select value={contrastBg} onChange={(e) => setContrastBg(e.target.value)}>
+                  {contrastOptions.options.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="contrast-preview">
+              <div
+                className="contrast-swatch"
+                style={{ background: contrastResult?.bgRaw, color: contrastResult?.fgRaw }}
+              >
+                <div className="contrast-swatch-title">Aa</div>
+                <div className="contrast-swatch-body">Preview text on selected background.</div>
+              </div>
+              <div className="contrast-metrics" role="status" aria-live="polite">
+                <div className="contrast-ratio">
+                  <span className="contrast-label">Ratio</span>
+                  <span className="contrast-value">
+                    {contrastResult ? contrastResult.ratioLabel : 'Unsupported'}
+                  </span>
+                </div>
+                <div className="contrast-badges">
+                  <span className={contrastResult?.normalAA ? 'badge ok' : 'badge'}>
+                    AA (normal)
+                  </span>
+                  <span className={contrastResult?.normalAAA ? 'badge ok' : 'badge'}>
+                    AAA (normal)
+                  </span>
+                  <span className={contrastResult?.largeAA ? 'badge ok' : 'badge'}>
+                    AA (large)
+                  </span>
+                  <span className={contrastResult?.largeAAA ? 'badge ok' : 'badge'}>
+                    AAA (large)
+                  </span>
+                </div>
+              </div>
+            </div>
+            <p className="contrast-footnote">
+              Notes: Transparent colors are composited over <code>--bg-solid</code> for a quick
+              estimate. Always verify against your actual layout.
             </p>
           </div>
           <div className="glass-card checklist">

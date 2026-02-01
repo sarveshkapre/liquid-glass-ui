@@ -105,4 +105,12 @@ describe('App', () => {
     fireEvent.keyDown(window, { key: 'k', code: 'KeyK', ctrlKey: true })
     expect(input).toHaveFocus()
   })
+
+  it('renders the contrast helper', () => {
+    render(<App />)
+
+    expect(screen.getByRole('heading', { name: /contrast helper/i })).toBeInTheDocument()
+    expect(screen.getByText(/^ratio$/i)).toBeInTheDocument()
+    expect(screen.getByText(/^aa \(normal\)$/i)).toBeInTheDocument()
+  })
 })
