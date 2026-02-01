@@ -6,6 +6,7 @@
 - Component cards: usage snippets in a disclosure with copy-to-clipboard.
 - Keyboard UX: skip-to-content link and consistent focus-visible rings.
 - Keyboard demo: focus the preview search input with `/` or `Ctrl+K`.
+- Motion: toggle reduced/full motion; reduced motion removes hover “lift”.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

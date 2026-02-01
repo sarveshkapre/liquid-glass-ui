@@ -3,6 +3,7 @@ import './App.css'
 import tokenData from './tokens.json'
 
 type Theme = 'light' | 'dark'
+type Motion = 'full' | 'reduced'
 
 type TokenItem = {
   name: string
@@ -99,8 +100,22 @@ function getInitialTheme(): Theme {
     : 'light'
 }
 
+function getInitialMotion(): Motion {
+  if (typeof window === 'undefined') {
+    return 'full'
+  }
+
+  const stored = window.localStorage.getItem('lg-motion')
+  if (stored === 'full' || stored === 'reduced') {
+    return stored
+  }
+
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'
+}
+
 function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const [motion, setMotion] = useState<Motion>(getInitialMotion)
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<number | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
@@ -109,6 +124,11 @@ function App() {
     document.documentElement.dataset.theme = theme
     window.localStorage.setItem('lg-theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    document.documentElement.dataset.motion = motion
+    window.localStorage.setItem('lg-motion', motion)
+  }, [motion])
 
   useEffect(() => {
     return () => {
@@ -156,6 +176,14 @@ function App() {
     [theme],
   )
 
+  const toggleMotionLabel = useMemo(
+    () =>
+      motion === 'reduced'
+        ? 'Switch to full motion'
+        : 'Switch to reduced motion',
+    [motion],
+  )
+
   const announce = (message: string) => {
     setToast(message)
     if (toastTimer.current) {
@@ -192,6 +220,17 @@ function App() {
             }
           >
             {theme === 'dark' ? 'Dark' : 'Light'}
+          </button>
+          <button
+            className="theme-toggle"
+            type="button"
+            aria-pressed={motion === 'reduced'}
+            aria-label={toggleMotionLabel}
+            onClick={() =>
+              setMotion((current) => (current === 'reduced' ? 'full' : 'reduced'))
+            }
+          >
+            {motion === 'reduced' ? 'Reduced' : 'Motion'}
           </button>
         </nav>
       </header>

@@ -9,3 +9,4 @@
 - Component usage snippets with copy-to-clipboard.
 - Keyboard UX polish: skip link + focus-visible rings.
 - Keyboard demo: focus preview search with `/` or `Ctrl+K`.
+- Motion: reduced/full toggle and reduced-motion hover behavior.

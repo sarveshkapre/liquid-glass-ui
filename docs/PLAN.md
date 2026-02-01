@@ -23,6 +23,7 @@ Ship a single-page component showcase that documents Liquid Glass tokens, sample
 ## MVP Checklist
 - [x] Hero, tokens, components, and a11y sections.
 - [x] Dark + light mode toggle.
+- [x] Reduced motion toggle (and reduced-motion friendly interactions).
 - [x] Responsive layout.
 - [x] Copy tokens to clipboard (value + CSS snippet) with a11y feedback.
 - [x] Export core tokens as downloadable JSON/CSS files.

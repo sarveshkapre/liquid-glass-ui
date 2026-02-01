@@ -27,6 +27,19 @@ describe('App', () => {
     })
   })
 
+  it('toggles the motion mode', async () => {
+    render(<App />)
+
+    const toggle = screen.getByRole('button', { name: /switch to full motion|switch to reduced motion/i })
+    const initialMotion = document.documentElement.dataset.motion
+
+    fireEvent.click(toggle)
+
+    await waitFor(() => {
+      expect(document.documentElement.dataset.motion).not.toBe(initialMotion)
+    })
+  })
+
   it('copies a token value to the clipboard', async () => {
     const user = userEvent.setup()
     const writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText')

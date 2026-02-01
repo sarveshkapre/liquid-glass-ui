@@ -9,7 +9,7 @@ afterEach(() => {
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query: string) => ({
-    matches: query.includes('dark'),
+    matches: query.includes('dark') || query.includes('reduce'),
     media: query,
     onchange: null,
     addListener: () => undefined,

@@ -674,4 +674,36 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  .primary-cta:hover,
+  .secondary-cta:hover,
+  .theme-toggle:hover,
+  .glass-button:hover,
+  .token-copy:hover {
+    transform: none;
+    opacity: 0.96;
+  }
+
+  .orb {
+    animation: none !important;
+  }
+}
+
+[data-motion='reduced'] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+[data-motion='reduced'] .primary-cta:hover,
+[data-motion='reduced'] .secondary-cta:hover,
+[data-motion='reduced'] .theme-toggle:hover,
+[data-motion='reduced'] .glass-button:hover,
+[data-motion='reduced'] .token-copy:hover {
+  transform: none;
+  opacity: 0.96;
+}
+
+[data-motion='reduced'] .orb {
+  animation: none !important;
 }

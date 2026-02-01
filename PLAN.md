@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Motion toggle (reduced/full) plus reduced-motion hover behavior (no lift).
 - 2026-02-01: Keyboard demo — focus the preview search with `/` or `Ctrl+K`.
 - 2026-02-01: Keyboard UX polish (skip link + focus-visible rings) and component usage snippets.
 - 2026-02-01: Component cards include copyable usage snippets.
