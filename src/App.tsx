@@ -193,6 +193,8 @@ function App() {
   const searchInputRef = useRef<HTMLInputElement | null>(null)
   const [contrastFg, setContrastFg] = useState('text')
   const [contrastBg, setContrastBg] = useState('glass-bg-soft')
+  const [tokenQuery, setTokenQuery] = useState('')
+  const [tokenUsedBy, setTokenUsedBy] = useState('all')
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -361,6 +363,33 @@ function App() {
     }
   }, [contrastBg, contrastFg, contrastOptions])
 
+  const tokenUsedByOptions = useMemo(() => {
+    const entries = tokens.flatMap((token) => token.usedBy ?? [])
+    return Array.from(new Set(entries)).sort((a, b) => a.localeCompare(b))
+  }, [])
+
+  const filteredTokens = useMemo(() => {
+    const normalizedQuery = tokenQuery.trim().toLowerCase()
+    return tokens.filter((token) => {
+      const matchesUsedBy =
+        tokenUsedBy === 'all' || (token.usedBy ?? []).includes(tokenUsedBy)
+
+      if (!matchesUsedBy) return false
+      if (!normalizedQuery) return true
+
+      const haystack = [
+        token.name,
+        token.value,
+        token.description,
+        ...(token.usedBy ?? []),
+      ]
+        .join(' ')
+        .toLowerCase()
+
+      return haystack.includes(normalizedQuery)
+    })
+  }, [tokenQuery, tokenUsedBy])
+
   return (
     <div className="app">
       <a className="skip-link" href="#main">
@@ -522,6 +551,98 @@ function App() {
               </article>
             ))}
           </div>
+
+          <details className="token-table" open>
+            <summary>Token table</summary>
+            <div className="token-table-body">
+              <div className="token-table-controls">
+                <label className="token-table-field">
+                  <span>Search</span>
+                  <input
+                    type="search"
+                    value={tokenQuery}
+                    onChange={(e) => setTokenQuery(e.target.value)}
+                    placeholder="Search tokens, values, or descriptions"
+                    aria-label="Search tokens"
+                  />
+                </label>
+                <label className="token-table-field">
+                  <span>Used by</span>
+                  <select
+                    value={tokenUsedBy}
+                    onChange={(e) => setTokenUsedBy(e.target.value)}
+                    aria-label="Filter tokens by usage"
+                  >
+                    <option value="all">All</option>
+                    {tokenUsedByOptions.map((entry) => (
+                      <option key={entry} value={entry}>
+                        {entry}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="token-table-meta" role="status" aria-live="polite">
+                Showing {filteredTokens.length} of {tokens.length}
+              </div>
+
+              <div className="token-table-scroll">
+                <table aria-label="Token table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Value</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTokens.map((token) => (
+                      <tr key={token.name}>
+                        <th scope="row">{token.name}</th>
+                        <td className="mono">{token.value}</td>
+                        <td>{token.description}</td>
+                        <td className="token-table-actions">
+                          <button
+                            className="token-copy token-copy--sm"
+                            type="button"
+                            aria-label={`Copy value for ${token.name} (table)`}
+                            onClick={async () => {
+                              try {
+                                await copyToClipboard(token.value)
+                                announce(`Copied ${token.name} value`)
+                              } catch {
+                                announce('Copy failed. Please try again.')
+                              }
+                            }}
+                          >
+                            Copy value
+                          </button>
+                          <button
+                            className="token-copy token-copy--sm subtle"
+                            type="button"
+                            aria-label={`Copy CSS snippet for ${token.name} (table)`}
+                            onClick={async () => {
+                              const css = `${toCssVarName(token.name)}: ${token.value};`
+                              try {
+                                await copyToClipboard(css)
+                                announce(`Copied ${token.name} CSS`)
+                              } catch {
+                                announce('Copy failed. Please try again.')
+                              }
+                            }}
+                          >
+                            Copy CSS
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
         </section>
 
         <section className="section" id="components">

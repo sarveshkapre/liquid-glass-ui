@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import App from './App'
@@ -46,7 +47,9 @@ describe('App', () => {
 
     render(<App />)
 
-    await user.click(screen.getByRole('button', { name: /copy value for glass\.blur\.24/i }))
+    await user.click(
+      screen.getByRole('button', { name: 'Copy value for glass.blur.24' }),
+    )
 
     await waitFor(() => {
       expect(writeTextSpy).toHaveBeenCalledWith('blur(24px)')
@@ -60,6 +63,32 @@ describe('App', () => {
 
     expect(screen.getByLabelText(/used by for glass\.blur\.24/i)).toBeInTheDocument()
     expect(screen.getAllByText('Used by').length).toBeGreaterThan(0)
+  })
+
+  it('filters the token table by search query', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const search = screen.getByRole('searchbox', { name: /search tokens/i })
+    await user.clear(search)
+    await user.type(search, 'accent.coral')
+
+    expect(screen.getByText('Showing 1 of 6')).toBeInTheDocument()
+    const table = screen.getByRole('table', { name: /token table/i })
+    expect(within(table).getByText('accent.coral')).toBeInTheDocument()
+    expect(within(table).queryByText('glass.blur.24')).not.toBeInTheDocument()
+  })
+
+  it('filters the token table by used-by', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const usedBy = screen.getByRole('combobox', { name: /filter tokens by usage/i })
+    await user.selectOptions(usedBy, 'Focus ring')
+
+    expect(screen.getByText('Showing 1 of 6')).toBeInTheDocument()
+    const table = screen.getByRole('table', { name: /token table/i })
+    expect(within(table).getByText('accent.aqua')).toBeInTheDocument()
   })
 
   it('exposes token download links', () => {

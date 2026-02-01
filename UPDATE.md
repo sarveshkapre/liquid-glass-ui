@@ -9,6 +9,7 @@
 - Motion: toggle reduced/full motion; reduced motion removes hover “lift”.
 - A11y: added an in-app contrast helper for quick WCAG checks on common token pairs.
 - Tokens: “Used by” chips on token cards to reduce drift between docs and UI.
+- Tokens: added a searchable token table with “used by” filtering.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

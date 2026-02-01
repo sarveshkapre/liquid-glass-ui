@@ -358,6 +358,11 @@
   opacity: 0.9;
 }
 
+.token-copy--sm {
+  padding: 7px 10px;
+  font-size: 0.78rem;
+}
+
 .token-copy:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-soft);
@@ -387,6 +392,134 @@
 }
 
 .token-usedby-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.token-table {
+  margin-top: 18px;
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--glass-bg-soft), transparent 25%);
+  overflow: hidden;
+}
+
+.token-table summary {
+  cursor: pointer;
+  padding: 16px 18px;
+  color: var(--text);
+  font-weight: 700;
+  list-style: none;
+}
+
+.token-table summary::-webkit-details-marker {
+  display: none;
+}
+
+.token-table summary::after {
+  content: '⌃';
+  float: right;
+  opacity: 0.75;
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
+.token-table[open] summary::after {
+  transform: rotate(0deg);
+}
+
+.token-table summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.token-table-body {
+  padding: 0 18px 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.token-table-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.token-table-field {
+  display: grid;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.token-table-field input,
+.token-table-field select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-soft);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.token-table-field input:focus-visible,
+.token-table-field select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.token-table-meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.token-table-scroll {
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  overflow: auto;
+  background: var(--glass-bg);
+}
+
+.token-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.token-table-scroll th,
+.token-table-scroll td {
+  padding: 12px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--glass-border), transparent 35%);
+  vertical-align: top;
+  text-align: left;
+}
+
+.token-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  background: color-mix(in srgb, var(--glass-bg-soft), transparent 10%);
+  backdrop-filter: blur(24px);
+  z-index: 1;
+}
+
+.token-table-scroll tbody tr:hover td,
+.token-table-scroll tbody tr:hover th {
+  background: color-mix(in srgb, var(--glass-bg-soft), transparent 30%);
+}
+
+.token-table-scroll th[scope='row'] {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.token-table-scroll .mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}
+
+.token-table-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;

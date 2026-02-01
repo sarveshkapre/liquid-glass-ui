@@ -13,3 +13,4 @@
 - Motion: reduced/full toggle and reduced-motion hover behavior.
 - A11y: in-app contrast helper for quick WCAG checks.
 - Tokens: “Used by” chips on token cards.
+- Tokens: token table view with search and filtering.
