@@ -4,6 +4,7 @@
 - Ship a real component gallery with copy-to-clipboard component snippets (initial snippets shipped).
 - Add keyboard interaction demos (focus navigation + reduced-motion variants).
 - Add searchable token table with “used by” filtering.
+- Add CSV export for tokens.
 
 ## Shipped
 - Exported core tokens as downloadable JSON and CSS files.
@@ -14,3 +15,4 @@
 - A11y: in-app contrast helper for quick WCAG checks.
 - Tokens: “Used by” chips on token cards.
 - Tokens: token table view with search and filtering.
+- Tokens: group filtering and CSV export.

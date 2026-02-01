@@ -91,6 +91,38 @@ describe('App', () => {
     expect(within(table).getByText('accent.aqua')).toBeInTheDocument()
   })
 
+  it('filters the token table by group', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const group = screen.getByRole('combobox', { name: /filter tokens by group/i })
+    await user.selectOptions(group, 'accent')
+
+    expect(screen.getByText('Showing 2 of 6')).toBeInTheDocument()
+    const table = screen.getByRole('table', { name: /token table/i })
+    expect(within(table).getByText('accent.aqua')).toBeInTheDocument()
+    expect(within(table).getByText('accent.coral')).toBeInTheDocument()
+  })
+
+  it('exports the filtered token table as CSV', async () => {
+    const user = userEvent.setup()
+
+    const createObjectURLSpy = vi
+      .spyOn(URL, 'createObjectURL')
+      .mockReturnValue('blob:tokens')
+
+    render(<App />)
+
+    const search = screen.getByRole('searchbox', { name: /search tokens/i })
+    await user.type(search, 'accent.coral')
+
+    await user.click(screen.getByRole('button', { name: /download filtered tokens as csv/i }))
+
+    expect(createObjectURLSpy).toHaveBeenCalledTimes(1)
+
+    createObjectURLSpy.mockRestore()
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 

@@ -11,3 +11,4 @@
 - Added an in-app contrast helper for quick WCAG checks on common token pairs.
 - Token cards now show “Used by” chips to keep examples and tokens in sync.
 - Added a token table view with search and “used by” filtering.
+- Token table now supports group filtering and CSV export.

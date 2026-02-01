@@ -195,6 +195,7 @@ function App() {
   const [contrastBg, setContrastBg] = useState('glass-bg-soft')
   const [tokenQuery, setTokenQuery] = useState('')
   const [tokenUsedBy, setTokenUsedBy] = useState('all')
+  const [tokenGroup, setTokenGroup] = useState('all')
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -371,10 +372,12 @@ function App() {
   const filteredTokens = useMemo(() => {
     const normalizedQuery = tokenQuery.trim().toLowerCase()
     return tokens.filter((token) => {
+      const group = token.name.split('.')[0] ?? ''
+      const matchesGroup = tokenGroup === 'all' || group === tokenGroup
       const matchesUsedBy =
         tokenUsedBy === 'all' || (token.usedBy ?? []).includes(tokenUsedBy)
 
-      if (!matchesUsedBy) return false
+      if (!matchesGroup || !matchesUsedBy) return false
       if (!normalizedQuery) return true
 
       const haystack = [
@@ -388,7 +391,48 @@ function App() {
 
       return haystack.includes(normalizedQuery)
     })
-  }, [tokenQuery, tokenUsedBy])
+  }, [tokenGroup, tokenQuery, tokenUsedBy])
+
+  const tokenGroupOptions = useMemo(() => {
+    const groups = tokens
+      .map((token) => token.name.split('.')[0] ?? '')
+      .filter((group) => group.length > 0)
+    return Array.from(new Set(groups)).sort((a, b) => a.localeCompare(b))
+  }, [])
+
+  const downloadTokenCsv = async () => {
+    const rows = filteredTokens.map((token) => ({
+      name: token.name,
+      value: token.value,
+      description: token.description,
+      usedBy: (token.usedBy ?? []).join('; '),
+    }))
+
+    const escape = (value: string) => `"${value.replaceAll('"', '""')}"`
+    const header = ['name', 'value', 'description', 'usedBy'].join(',')
+    const lines = rows.map((row) =>
+      [row.name, row.value, row.description, row.usedBy].map(escape).join(','),
+    )
+    const csv = `${header}\n${lines.join('\n')}\n`
+
+    try {
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'liquid-glass-tokens.csv'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => {
+        URL.revokeObjectURL(url)
+      }, 1000)
+      announce('Downloaded token CSV')
+    } catch {
+      await copyToClipboard(csv)
+      announce('Copied token CSV')
+    }
+  }
 
   return (
     <div className="app">
@@ -567,6 +611,21 @@ function App() {
                   />
                 </label>
                 <label className="token-table-field">
+                  <span>Group</span>
+                  <select
+                    value={tokenGroup}
+                    onChange={(e) => setTokenGroup(e.target.value)}
+                    aria-label="Filter tokens by group"
+                  >
+                    <option value="all">All</option>
+                    {tokenGroupOptions.map((group) => (
+                      <option key={group} value={group}>
+                        {group}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="token-table-field">
                   <span>Used by</span>
                   <select
                     value={tokenUsedBy}
@@ -583,8 +642,18 @@ function App() {
                 </label>
               </div>
 
-              <div className="token-table-meta" role="status" aria-live="polite">
-                Showing {filteredTokens.length} of {tokens.length}
+              <div className="token-table-meta">
+                <div role="status" aria-live="polite">
+                  Showing {filteredTokens.length} of {tokens.length}
+                </div>
+                <button
+                  className="token-copy token-copy--sm"
+                  type="button"
+                  onClick={() => void downloadTokenCsv()}
+                  aria-label="Download filtered tokens as CSV"
+                >
+                  Export CSV
+                </button>
               </div>
 
               <div className="token-table-scroll">

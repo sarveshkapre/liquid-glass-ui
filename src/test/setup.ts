@@ -43,3 +43,22 @@ Object.defineProperty(navigator, 'clipboard', {
   },
   configurable: true,
 })
+
+if (!('createObjectURL' in URL)) {
+  Object.defineProperty(URL, 'createObjectURL', {
+    value: () => 'blob:mock',
+    configurable: true,
+  })
+}
+
+if (!('revokeObjectURL' in URL)) {
+  Object.defineProperty(URL, 'revokeObjectURL', {
+    value: () => undefined,
+    configurable: true,
+  })
+}
+
+Object.defineProperty(HTMLAnchorElement.prototype, 'click', {
+  value: () => undefined,
+  configurable: true,
+})
