@@ -77,6 +77,79 @@ function toTokenRowText(token: TokenItem) {
   return `${token.name}\t${token.value}\t${token.description}\t${usedBy}\n`
 }
 
+type TokenEditsFile = {
+  version?: unknown
+  overrides?: unknown
+}
+
+type ImportEditsResult = {
+  overrides: Record<string, Partial<TokenItem>>
+  ignoredCount: number
+  errors: string[]
+}
+
+function parseTokenEditsJson(jsonText: string, allowedTokenNames: Set<string>): ImportEditsResult {
+  const trimmed = jsonText.trim()
+  if (!trimmed) {
+    return { overrides: {}, ignoredCount: 0, errors: ['Paste edits JSON to import.'] }
+  }
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(trimmed)
+  } catch {
+    return { overrides: {}, ignoredCount: 0, errors: ['Invalid JSON.'] }
+  }
+
+  if (!parsed || typeof parsed !== 'object') {
+    return { overrides: {}, ignoredCount: 0, errors: ['Invalid edits JSON.'] }
+  }
+
+  const { overrides } = parsed as TokenEditsFile
+  if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
+    return { overrides: {}, ignoredCount: 0, errors: ['Missing "overrides" object.'] }
+  }
+
+  const nextOverrides: Record<string, Partial<TokenItem>> = {}
+  let ignoredCount = 0
+
+  for (const [name, override] of Object.entries(overrides as Record<string, unknown>)) {
+    if (!allowedTokenNames.has(name)) {
+      ignoredCount += 1
+      continue
+    }
+    if (!override || typeof override !== 'object' || Array.isArray(override)) {
+      ignoredCount += 1
+      continue
+    }
+
+    const candidate = override as Partial<TokenItem>
+    const cleaned: Partial<TokenItem> = {}
+
+    if (typeof candidate.value === 'string') cleaned.value = candidate.value
+    if (typeof candidate.description === 'string') cleaned.description = candidate.description
+    if (
+      Array.isArray(candidate.usedBy) &&
+      candidate.usedBy.every((entry) => typeof entry === 'string' && entry.trim().length > 0)
+    ) {
+      cleaned.usedBy = candidate.usedBy
+    }
+
+    if (Object.keys(cleaned).length > 0) {
+      nextOverrides[name] = cleaned
+    } else {
+      ignoredCount += 1
+    }
+  }
+
+  const errors: string[] = []
+  if (Object.keys(nextOverrides).length === 0) {
+    errors.push('No valid overrides found.')
+  }
+
+  return { overrides: nextOverrides, ignoredCount, errors }
+}
+
 type Rgba = { r: number; g: number; b: number; a: number }
 
 function clamp01(value: number) {
@@ -486,51 +559,20 @@ function App() {
     }
   }
 
-  const importTokenEdits = () => {
-    try {
-      const parsed = JSON.parse(importJson) as unknown
-      if (!parsed || typeof parsed !== 'object') {
-        announce('Invalid edits JSON')
-        return
-      }
+  const importPreview = useMemo(() => {
+    const allowed = new Set(baseTokens.map((token) => token.name))
+    return parseTokenEditsJson(importJson, allowed)
+  }, [importJson])
 
-      const overrides = (parsed as { overrides?: unknown }).overrides
-      if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
-        announce('Invalid edits JSON: missing overrides')
-        return
-      }
-
-      const allowedTokenNames = new Set(baseTokens.map((token) => token.name))
-      const nextOverrides: Record<string, Partial<TokenItem>> = {}
-
-      for (const [name, override] of Object.entries(overrides as Record<string, unknown>)) {
-        if (!allowedTokenNames.has(name)) continue
-        if (!override || typeof override !== 'object' || Array.isArray(override)) continue
-
-        const candidate = override as Partial<TokenItem>
-        const cleaned: Partial<TokenItem> = {}
-
-        if (typeof candidate.value === 'string') cleaned.value = candidate.value
-        if (typeof candidate.description === 'string') cleaned.description = candidate.description
-        if (
-          Array.isArray(candidate.usedBy) &&
-          candidate.usedBy.every((entry) => typeof entry === 'string' && entry.trim().length > 0)
-        ) {
-          cleaned.usedBy = candidate.usedBy
-        }
-
-        if (Object.keys(cleaned).length > 0) {
-          nextOverrides[name] = cleaned
-        }
-      }
-
-      setTokenOverrides((current) => ({ ...current, ...nextOverrides }))
-      setEditingTokenName(null)
-      announce(`Imported ${Object.keys(nextOverrides).length} token edits`)
-      setImportOpen(false)
-    } catch {
-      announce('Invalid edits JSON')
+  const importTokenEdits = (result: ImportEditsResult) => {
+    if (result.errors.length > 0) {
+      announce(result.errors[0] ?? 'Invalid edits JSON')
+      return
     }
+    setTokenOverrides((current) => ({ ...current, ...result.overrides }))
+    setEditingTokenName(null)
+    announce(`Imported ${Object.keys(result.overrides).length} token edits`)
+    setImportOpen(false)
   }
 
   const loadImportFile = async (file: File) => {
@@ -883,6 +925,12 @@ function App() {
                       Choose file
                     </label>
                   </div>
+                  <div className="token-import-format" aria-label="Edits JSON format">
+                    Format:{' '}
+                    <code>
+                      {'{ version: 1, overrides: { [tokenName]: { value?, description?, usedBy? } } }'}
+                    </code>
+                  </div>
                   <textarea
                     className="token-table-textarea"
                     value={importJson}
@@ -890,12 +938,28 @@ function App() {
                     placeholder="Paste liquid-glass-token-edits.json contents here"
                     aria-label="Edits JSON"
                   />
+                  {importPreview.errors.length > 0 ? (
+                    <div className="token-import-errors" role="alert">
+                      {importPreview.errors.map((error) => (
+                        <div key={error}>{error}</div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="token-import-summary" role="status" aria-live="polite">
+                      Ready to import {Object.keys(importPreview.overrides).length} edits
+                      {importPreview.ignoredCount > 0
+                        ? ` (ignored ${importPreview.ignoredCount})`
+                        : ''}
+                      .
+                    </div>
+                  )}
                   <div className="token-import-actions">
                     <button
                       className="token-copy token-copy--sm"
                       type="button"
-                      onClick={importTokenEdits}
+                      onClick={() => importTokenEdits(importPreview)}
                       aria-label="Apply imported edits"
+                      disabled={importPreview.errors.length > 0}
                     >
                       Apply
                     </button>

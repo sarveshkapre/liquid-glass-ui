@@ -247,6 +247,27 @@ describe('App', () => {
     expect(within(table).getByText('#000000')).toBeInTheDocument()
   })
 
+  it('disables Apply when import JSON is invalid', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /import token edits json/i }))
+
+    const apply = screen.getByRole('button', { name: /apply imported edits/i })
+    expect(apply).toBeDisabled()
+
+    fireEvent.change(screen.getByRole('textbox', { name: /edits json/i }), {
+      target: {
+        value: JSON.stringify({
+          version: 1,
+          overrides: { 'accent.coral': { value: '#000000' } },
+        }),
+      },
+    })
+
+    expect(apply).not.toBeDisabled()
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 

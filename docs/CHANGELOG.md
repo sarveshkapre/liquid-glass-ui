@@ -17,3 +17,4 @@
 - Token table now supports exporting local edits as JSON.
 - Token table now supports importing edits JSON.
 - Import supports drag-and-drop and a file picker.
+- Import dialog now includes inline validation and a schema hint.

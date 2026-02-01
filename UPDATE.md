@@ -16,6 +16,7 @@
 - Tokens: added “Export edits” to download local token overrides as JSON.
 - Tokens: added “Import edits” to rehydrate local token overrides from JSON.
 - Tokens: import now supports drag-and-drop and a file picker.
+- Tokens: import dialog now includes inline validation and a schema hint.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify
