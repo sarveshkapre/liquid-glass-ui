@@ -455,6 +455,34 @@ function App() {
     }
   }
 
+  const downloadTokenEdits = async () => {
+    const payload = {
+      version: 1,
+      generatedAt: new Date().toISOString(),
+      overrides: tokenOverrides,
+    }
+
+    const json = `${JSON.stringify(payload, null, 2)}\n`
+
+    try {
+      const blob = new Blob([json], { type: 'application/json;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'liquid-glass-token-edits.json'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => {
+        URL.revokeObjectURL(url)
+      }, 1000)
+      announce('Downloaded token edits JSON')
+    } catch {
+      await copyToClipboard(json)
+      announce('Copied token edits JSON')
+    }
+  }
+
   return (
     <div className="app">
       <a className="skip-link" href="#main">
@@ -684,18 +712,28 @@ function App() {
                 </div>
                 <div className="token-table-meta-actions">
                   {Object.keys(tokenOverrides).length > 0 ? (
-                    <button
-                      className="token-copy token-copy--sm subtle"
-                      type="button"
-                      onClick={() => {
-                        setTokenOverrides({})
-                        setEditingTokenName(null)
-                        announce('Reset local token edits')
-                      }}
-                      aria-label="Reset local token edits"
-                    >
-                      Reset edits
-                    </button>
+                    <>
+                      <button
+                        className="token-copy token-copy--sm subtle"
+                        type="button"
+                        onClick={() => void downloadTokenEdits()}
+                        aria-label="Export local token edits as JSON"
+                      >
+                        Export edits
+                      </button>
+                      <button
+                        className="token-copy token-copy--sm subtle"
+                        type="button"
+                        onClick={() => {
+                          setTokenOverrides({})
+                          setEditingTokenName(null)
+                          announce('Reset local token edits')
+                        }}
+                        aria-label="Reset local token edits"
+                      >
+                        Reset edits
+                      </button>
+                    </>
                   ) : null}
                   <button
                     className="token-copy token-copy--sm"

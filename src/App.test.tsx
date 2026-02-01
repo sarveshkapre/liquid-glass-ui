@@ -170,6 +170,29 @@ describe('App', () => {
     expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
   })
 
+  it('exports local token edits as JSON', async () => {
+    const user = userEvent.setup()
+
+    const createObjectURLSpy = vi
+      .spyOn(URL, 'createObjectURL')
+      .mockReturnValue('blob:edits')
+
+    render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+
+    const valueInput = screen.getByRole('textbox', { name: 'Edit value for accent.coral' })
+    await user.clear(valueInput)
+    await user.type(valueInput, '#000000')
+
+    await user.click(screen.getByRole('button', { name: 'Save edits for accent.coral' }))
+    await user.click(screen.getByRole('button', { name: /export local token edits as json/i }))
+
+    expect(createObjectURLSpy).toHaveBeenCalledTimes(1)
+    createObjectURLSpy.mockRestore()
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 
