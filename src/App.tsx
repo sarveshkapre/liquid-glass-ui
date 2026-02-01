@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
+import tokenData from './tokens.json'
 
 type Theme = 'light' | 'dark'
 
@@ -13,61 +14,44 @@ type ComponentItem = {
   title: string
   description: string
   tag: string
+  snippet: string
 }
 
-const tokens: TokenItem[] = [
-  {
-    name: 'glass.blur.24',
-    value: 'blur(24px)',
-    description: 'Backplate blur for panels and cards.',
-  },
-  {
-    name: 'glass.opacity.65',
-    value: '0.65',
-    description: 'Material density for light surfaces.',
-  },
-  {
-    name: 'glass.stroke.10',
-    value: '1px solid rgba(255,255,255,0.16)',
-    description: 'Hairline highlight for edge definition.',
-  },
-  {
-    name: 'shadow.depth.40',
-    value: '0 40px 80px rgba(11, 24, 35, 0.35)',
-    description: 'Ambient depth in dark mode.',
-  },
-  {
-    name: 'accent.aqua',
-    value: '#7ee5ff',
-    description: 'Primary action + focus highlight.',
-  },
-  {
-    name: 'accent.coral',
-    value: '#ff9f7a',
-    description: 'Secondary accent for warmth.',
-  },
-]
+const tokens = tokenData as TokenItem[]
 
 const components: ComponentItem[] = [
   {
     title: 'Float Card',
     description: 'Content container with liquid depth + hover lift.',
     tag: 'CARD',
+    snippet: `<div class="glass-card">
+  <p class="card-eyebrow">Prototype</p>
+  <h3>Floating panels</h3>
+  <p>Layered glass surfaces that hold content.</p>
+</div>`,
   },
   {
     title: 'Iced Button',
     description: 'Primary CTA with glow and frosted fill.',
     tag: 'BUTTON',
+    snippet: `<button class="glass-button" type="button">
+  Iced Button
+</button>`,
   },
   {
     title: 'Halo Input',
     description: 'Form field with subtle inner glow.',
     tag: 'INPUT',
+    snippet: `<label class="glass-input">
+  <span class="sr-only">Search styles</span>
+  <input type="text" placeholder="Search styles" />
+</label>`,
   },
   {
     title: 'Context Pill',
     description: 'Status pill for tags and filters.',
     tag: 'PILL',
+    snippet: `<span class="glass-pill">Blur 24</span>`,
   },
 ]
 
@@ -150,6 +134,9 @@ function App() {
 
   return (
     <div className="app">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true">
@@ -175,7 +162,7 @@ function App() {
         </nav>
       </header>
 
-      <main>
+      <main id="main">
         <section className="hero" id="top">
           <div className="hero-copy">
             <p className="eyebrow">Liquid Glass System</p>
@@ -235,6 +222,11 @@ function App() {
               Build your own liquid-glass language by composing these primitives.
               Export as CSS variables, JSON, or Figma tokens.
             </p>
+            <div className="section-links" aria-label="Token downloads">
+              <a href="/tokens.json">Download JSON</a>
+              <span aria-hidden="true">•</span>
+              <a href="/tokens.css">Download CSS</a>
+            </div>
           </div>
           <div className="token-grid">
             {tokens.map((token) => (
@@ -247,8 +239,12 @@ function App() {
                     type="button"
                     aria-label={`Copy value for ${token.name}`}
                     onClick={async () => {
-                      await copyToClipboard(token.value)
-                      announce(`Copied ${token.name} value`)
+                      try {
+                        await copyToClipboard(token.value)
+                        announce(`Copied ${token.name} value`)
+                      } catch {
+                        announce('Copy failed. Please try again.')
+                      }
                     }}
                   >
                     Copy value
@@ -259,8 +255,12 @@ function App() {
                     aria-label={`Copy CSS snippet for ${token.name}`}
                     onClick={async () => {
                       const css = `${toCssVarName(token.name)}: ${token.value};`
-                      await copyToClipboard(css)
-                      announce(`Copied ${token.name} CSS`)
+                      try {
+                        await copyToClipboard(css)
+                        announce(`Copied ${token.name} CSS`)
+                      } catch {
+                        announce('Copy failed. Please try again.')
+                      }
                     }}
                   >
                     Copy CSS
@@ -289,6 +289,29 @@ function App() {
                 <button className="glass-button" type="button">
                   Preview style
                 </button>
+                <details className="snippet">
+                  <summary>Usage</summary>
+                  <div className="snippet-body">
+                    <button
+                      className="token-copy snippet-copy"
+                      type="button"
+                      aria-label={`Copy snippet for ${component.title}`}
+                      onClick={async () => {
+                        try {
+                          await copyToClipboard(component.snippet)
+                          announce(`Copied ${component.title} snippet`)
+                        } catch {
+                          announce('Copy failed. Please try again.')
+                        }
+                      }}
+                    >
+                      Copy snippet
+                    </button>
+                    <pre className="snippet-code">
+                      <code>{component.snippet}</code>
+                    </pre>
+                  </div>
+                </details>
               </article>
             ))}
           </div>

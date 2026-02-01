@@ -1,6 +1,10 @@
 # ROADMAP
 
 ## Next
-- Export tokens as JSON and CSS files.
-- Add component usage snippets and keyboard interaction demos.
-- Ship a real component gallery with copy-to-clipboard component snippets (token copy shipped).
+- Ship a real component gallery with copy-to-clipboard component snippets (initial snippets shipped).
+- Add keyboard interaction demos (focus navigation + reduced-motion variants).
+
+## Shipped
+- Exported core tokens as downloadable JSON and CSS files.
+- Component usage snippets with copy-to-clipboard.
+- Keyboard UX polish: skip link + focus-visible rings.

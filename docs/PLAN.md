@@ -25,6 +25,9 @@ Ship a single-page component showcase that documents Liquid Glass tokens, sample
 - [x] Dark + light mode toggle.
 - [x] Responsive layout.
 - [x] Copy tokens to clipboard (value + CSS snippet) with a11y feedback.
+- [x] Export core tokens as downloadable JSON/CSS files.
+- [x] Component usage snippets with copy-to-clipboard.
+- [x] Skip-to-content and consistent focus-visible rings.
 - [x] Tests for basic rendering + theme toggle.
 - [x] Docs + Makefile + CI workflows.
 

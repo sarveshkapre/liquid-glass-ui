@@ -2,16 +2,14 @@
 
 ## Shipped
 - Token cards: “Copy value” + “Copy CSS” actions with a11y-friendly toast feedback.
+- Token export: `public/tokens.json` + `public/tokens.css` generated from `src/tokens.json` and exposed as download links.
+- Component cards: usage snippets in a disclosure with copy-to-clipboard.
+- Keyboard UX: skip-to-content link and consistent focus-visible rings.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify
 - `make dev`
 - `make check`
 
-## PR
-If you have GitHub CLI (`gh`) authenticated:
-- `git push -u origin HEAD`
-- `gh pr create --fill`
-
-Otherwise:
-- Push your branch, then open a PR in GitHub targeting `main`.
+## Ship (no PR)
+- `git push origin main`

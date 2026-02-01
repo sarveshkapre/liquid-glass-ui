@@ -7,6 +7,9 @@
     "node": ">=20.11 <21"
   },
   "scripts": {
+    "generate:tokens": "node ./scripts/generate-tokens.mjs",
+    "predev": "npm run generate:tokens",
+    "prebuild": "npm run generate:tokens",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

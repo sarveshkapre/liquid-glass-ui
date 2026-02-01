@@ -41,4 +41,41 @@ describe('App', () => {
 
     expect(await screen.findByText(/copied glass\.blur\.24 value/i)).toBeInTheDocument()
   })
+
+  it('exposes token download links', () => {
+    render(<App />)
+
+    expect(screen.getByRole('link', { name: /download json/i })).toHaveAttribute(
+      'href',
+      '/tokens.json',
+    )
+    expect(screen.getByRole('link', { name: /download css/i })).toHaveAttribute(
+      'href',
+      '/tokens.css',
+    )
+  })
+
+  it('has a skip link to main content', () => {
+    render(<App />)
+
+    expect(screen.getByRole('link', { name: /skip to content/i })).toHaveAttribute(
+      'href',
+      '#main',
+    )
+    expect(screen.getByRole('main')).toHaveAttribute('id', 'main')
+  })
+
+  it('copies a component snippet to the clipboard', async () => {
+    const user = userEvent.setup()
+    const writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText')
+
+    render(<App />)
+
+    await user.click(screen.getAllByText('Usage')[0])
+    await user.click(screen.getByRole('button', { name: /copy snippet for float card/i }))
+
+    await waitFor(() => {
+      expect(writeTextSpy).toHaveBeenCalledWith(expect.stringContaining('class="glass-card"'))
+    })
+  })
 })

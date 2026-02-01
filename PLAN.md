@@ -21,8 +21,11 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Keyboard UX polish (skip link + focus-visible rings) and component usage snippets.
+- 2026-02-01: Component cards include copyable usage snippets.
+- 2026-02-01: Export core tokens as downloadable `tokens.json` + `tokens.css`.
 - 2026-02-01: Copy-to-clipboard for tokens (value + CSS snippet) with a11y-safe toast feedback.
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Export tokens as JSON/CSS artifacts (see `docs/ROADMAP.md`).
+- Add keyboard interaction demos (focus, disclosure, and reduced-motion states).
