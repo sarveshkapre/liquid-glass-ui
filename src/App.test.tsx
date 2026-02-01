@@ -173,6 +173,28 @@ describe('App', () => {
     expect(within(table).getByText('#000000')).toBeInTheDocument()
   })
 
+  it('supports Ctrl+Z / Ctrl+Shift+Z shortcuts inside the token table', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+    const valueInput = screen.getByRole('textbox', { name: 'Edit value for accent.coral' })
+    await user.clear(valueInput)
+    await user.type(valueInput, '#000000')
+    await user.click(screen.getByRole('button', { name: 'Save edits for accent.coral' }))
+
+    const exportCsv = screen.getByRole('button', { name: /download filtered tokens as csv/i })
+    exportCsv.focus()
+
+    fireEvent.keyDown(exportCsv, { key: 'z', ctrlKey: true })
+    expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
+
+    fireEvent.keyDown(exportCsv, { key: 'z', ctrlKey: true, shiftKey: true })
+    expect(within(table).getByText('#000000')).toBeInTheDocument()
+  })
+
   it('exports local token edits as JSON', async () => {
     const user = userEvent.setup()
 

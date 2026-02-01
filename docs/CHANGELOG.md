@@ -20,3 +20,4 @@
 - Import dialog now includes inline validation and a schema hint.
 - Token table now supports undo for local edits/imports.
 - Token table now supports redo for local edits/imports.
+- Token table now supports `Ctrl/Cmd+Z` undo and `Ctrl/Cmd+Shift+Z` redo shortcuts.

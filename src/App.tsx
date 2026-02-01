@@ -821,7 +821,32 @@ function App() {
             ))}
           </div>
 
-          <details className="token-table" open>
+          <details
+            className="token-table"
+            open
+            onKeyDownCapture={(event) => {
+              const target = event.target
+              if (
+                target instanceof HTMLElement &&
+                (target.isContentEditable ||
+                  target.tagName === 'INPUT' ||
+                  target.tagName === 'TEXTAREA' ||
+                  target.tagName === 'SELECT')
+              ) {
+                return
+              }
+
+              if (!(event.ctrlKey || event.metaKey) || event.altKey) return
+              if (event.key.toLowerCase() !== 'z') return
+
+              event.preventDefault()
+              if (event.shiftKey) {
+                redoTokenOverride()
+              } else {
+                undoTokenOverride()
+              }
+            }}
+          >
             <summary>Token table</summary>
             <div className="token-table-body">
               <div className="token-table-controls">

@@ -25,3 +25,4 @@
 - Tokens: inline validation and schema hint for edits import.
 - Tokens: undo support for local edits/imports.
 - Tokens: redo support for local edits/imports.
+- Tokens: keyboard shortcuts for undo/redo in the token table.

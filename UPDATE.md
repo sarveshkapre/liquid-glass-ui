@@ -19,6 +19,7 @@
 - Tokens: import dialog now includes inline validation and a schema hint.
 - Tokens: added one-step undo for local token edits.
 - Tokens: added redo for local token edits/imports.
+- Tokens: added `Ctrl/Cmd+Z` undo and `Ctrl/Cmd+Shift+Z` redo shortcuts (scoped to the token table).
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

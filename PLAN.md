@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Token table supports `Ctrl/Cmd+Z` undo and `Ctrl/Cmd+Shift+Z` redo.
 - 2026-02-01: Redo support for token edits (multi-step).
 - 2026-02-01: Undo for token edits (one-step history).
 - 2026-02-01: Import UX now includes inline validation and a schema hint.
@@ -42,4 +43,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add `Cmd/Ctrl+Z` undo and `Cmd/Ctrl+Shift+Z` redo shortcuts (scoped to token table).
+- Add a small “edits” footer showing undo/redo depth and current override count.
