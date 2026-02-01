@@ -7,14 +7,16 @@ describe('App', () => {
     render(<App />)
 
     expect(
-      screen.getByRole('heading', { name: /liquid glass ui/i }),
+      screen.getByRole('heading', {
+        name: /design tokens \+ glass components inspired by apple\./i,
+      }),
     ).toBeInTheDocument()
   })
 
   it('toggles the theme', async () => {
     render(<App />)
 
-    const toggle = screen.getByRole('button', { name: /theme/i })
+    const [toggle] = screen.getAllByLabelText(/switch to .* theme/i)
     const initialTheme = document.documentElement.dataset.theme
 
     fireEvent.click(toggle)
