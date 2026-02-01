@@ -136,6 +136,40 @@ describe('App', () => {
     createObjectURLSpy.mockRestore()
   })
 
+  it('copies a token row from the table', async () => {
+    const user = userEvent.setup()
+    const writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText')
+
+    render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    await user.click(
+      within(table).getByRole('button', { name: 'Copy row for accent.coral (table)' }),
+    )
+
+    expect(writeTextSpy).toHaveBeenCalledWith(expect.stringContaining('accent.coral\t#ff9f7a'))
+  })
+
+  it('supports inline edits in the token table', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+
+    const valueInput = screen.getByRole('textbox', { name: 'Edit value for accent.coral' })
+    await user.clear(valueInput)
+    await user.type(valueInput, '#000000')
+
+    await user.click(screen.getByRole('button', { name: 'Save edits for accent.coral' }))
+
+    expect(within(table).getByText('#000000')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /reset local token edits/i }))
+    expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 

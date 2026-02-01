@@ -12,6 +12,7 @@
 - Tokens: added a searchable token table with “used by” filtering.
 - Tokens: token table now supports group filtering and CSV export.
 - Tokens: added “Copy JSON” actions (cards + table).
+- Tokens: token table now supports “Copy row” and local inline edits with reset.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

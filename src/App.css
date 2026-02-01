@@ -480,6 +480,45 @@
   font-size: 0.9rem;
 }
 
+.token-table-meta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.token-table-note {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.token-table-input,
+.token-table-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-soft);
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.token-table-textarea {
+  min-height: 74px;
+  resize: vertical;
+}
+
+.token-table-input:focus-visible,
+.token-table-textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.token-table-edit {
+  display: grid;
+  gap: 10px;
+}
+
 .token-table-scroll {
   border: 1px solid var(--glass-border);
   border-radius: 16px;
@@ -490,7 +529,7 @@
 .token-table-scroll table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 720px;
+  min-width: 920px;
 }
 
 .token-table-scroll th,
@@ -528,6 +567,16 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.token-table-usedby-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.token-table-empty {
+  color: var(--text-muted);
 }
 
 @media (max-width: 520px) {

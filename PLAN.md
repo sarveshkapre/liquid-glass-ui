@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Token table supports copy-row + local inline edits (with reset).
 - 2026-02-01: Copy JSON actions for tokens (cards + table).
 - 2026-02-01: Token table adds group filtering and CSV export.
 - 2026-02-01: Token table view with search + “used by” filtering.
@@ -35,4 +36,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add lightweight “copy row” (name/value/desc) and inline edit for local experimentation.
+- Add “export overrides” for local token edits (JSON patch) to share experiments.

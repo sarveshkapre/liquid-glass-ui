@@ -13,3 +13,4 @@
 - Added a token table view with search and “used by” filtering.
 - Token table now supports group filtering and CSV export.
 - Token cards/table now support “Copy JSON”.
+- Token table now supports “Copy row” and local inline edits (not persisted).

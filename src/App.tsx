@@ -19,7 +19,7 @@ type ComponentItem = {
   snippet: string
 }
 
-const tokens = tokenData as TokenItem[]
+const baseTokens = tokenData as TokenItem[]
 
 const components: ComponentItem[] = [
   {
@@ -70,6 +70,11 @@ function toCssVarName(tokenName: string) {
 
 function toTokenJson(token: TokenItem) {
   return `${JSON.stringify(token, null, 2)}\n`
+}
+
+function toTokenRowText(token: TokenItem) {
+  const usedBy = (token.usedBy ?? []).join('; ')
+  return `${token.name}\t${token.value}\t${token.description}\t${usedBy}\n`
 }
 
 type Rgba = { r: number; g: number; b: number; a: number }
@@ -200,6 +205,11 @@ function App() {
   const [tokenQuery, setTokenQuery] = useState('')
   const [tokenUsedBy, setTokenUsedBy] = useState('all')
   const [tokenGroup, setTokenGroup] = useState('all')
+  const [tokenOverrides, setTokenOverrides] = useState<Record<string, Partial<TokenItem>>>({})
+  const [editingTokenName, setEditingTokenName] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState('')
+  const [editDescription, setEditDescription] = useState('')
+  const [editUsedBy, setEditUsedBy] = useState('')
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -274,6 +284,13 @@ function App() {
       setToast(null)
     }, 2200)
   }
+
+  const tokens = useMemo(() => {
+    return baseTokens.map((token) => {
+      const override = tokenOverrides[token.name]
+      return override ? { ...token, ...override } : token
+    })
+  }, [tokenOverrides])
 
   const contrastOptions = useMemo(() => {
     const baseDefaults =
@@ -371,7 +388,7 @@ function App() {
   const tokenUsedByOptions = useMemo(() => {
     const entries = tokens.flatMap((token) => token.usedBy ?? [])
     return Array.from(new Set(entries)).sort((a, b) => a.localeCompare(b))
-  }, [])
+  }, [tokens])
 
   const filteredTokens = useMemo(() => {
     const normalizedQuery = tokenQuery.trim().toLowerCase()
@@ -395,14 +412,14 @@ function App() {
 
       return haystack.includes(normalizedQuery)
     })
-  }, [tokenGroup, tokenQuery, tokenUsedBy])
+  }, [tokenGroup, tokenQuery, tokenUsedBy, tokens])
 
   const tokenGroupOptions = useMemo(() => {
     const groups = tokens
       .map((token) => token.name.split('.')[0] ?? '')
       .filter((group) => group.length > 0)
     return Array.from(new Set(groups)).sort((a, b) => a.localeCompare(b))
-  }, [])
+  }, [tokens])
 
   const downloadTokenCsv = async () => {
     const rows = filteredTokens.map((token) => ({
@@ -665,14 +682,33 @@ function App() {
                 <div role="status" aria-live="polite">
                   Showing {filteredTokens.length} of {tokens.length}
                 </div>
-                <button
-                  className="token-copy token-copy--sm"
-                  type="button"
-                  onClick={() => void downloadTokenCsv()}
-                  aria-label="Download filtered tokens as CSV"
-                >
-                  Export CSV
-                </button>
+                <div className="token-table-meta-actions">
+                  {Object.keys(tokenOverrides).length > 0 ? (
+                    <button
+                      className="token-copy token-copy--sm subtle"
+                      type="button"
+                      onClick={() => {
+                        setTokenOverrides({})
+                        setEditingTokenName(null)
+                        announce('Reset local token edits')
+                      }}
+                      aria-label="Reset local token edits"
+                    >
+                      Reset edits
+                    </button>
+                  ) : null}
+                  <button
+                    className="token-copy token-copy--sm"
+                    type="button"
+                    onClick={() => void downloadTokenCsv()}
+                    aria-label="Download filtered tokens as CSV"
+                  >
+                    Export CSV
+                  </button>
+                </div>
+              </div>
+              <div className="token-table-note">
+                Local edits only (not saved, not exported to `public/tokens.json`).
               </div>
 
               <div className="token-table-scroll">
@@ -682,6 +718,7 @@ function App() {
                       <th scope="col">Name</th>
                       <th scope="col">Value</th>
                       <th scope="col">Description</th>
+                      <th scope="col">Used by</th>
                       <th scope="col">Actions</th>
                     </tr>
                   </thead>
@@ -689,8 +726,53 @@ function App() {
                     {filteredTokens.map((token) => (
                       <tr key={token.name}>
                         <th scope="row">{token.name}</th>
-                        <td className="mono">{token.value}</td>
-                        <td>{token.description}</td>
+                        <td className="mono">
+                          {editingTokenName === token.name ? (
+                            <input
+                              className="token-table-input"
+                              value={editValue}
+                              onChange={(e) => setEditValue(e.target.value)}
+                              aria-label={`Edit value for ${token.name}`}
+                            />
+                          ) : (
+                            token.value
+                          )}
+                        </td>
+                        <td>
+                          {editingTokenName === token.name ? (
+                            <div className="token-table-edit">
+                              <textarea
+                                className="token-table-textarea"
+                                value={editDescription}
+                                onChange={(e) => setEditDescription(e.target.value)}
+                                aria-label={`Edit description for ${token.name}`}
+                              />
+                            </div>
+                          ) : (
+                            token.description
+                          )}
+                        </td>
+                        <td>
+                          {editingTokenName === token.name ? (
+                            <input
+                              className="token-table-input"
+                              value={editUsedBy}
+                              onChange={(e) => setEditUsedBy(e.target.value)}
+                              aria-label={`Edit used by for ${token.name}`}
+                              placeholder="Comma-separated"
+                            />
+                          ) : token.usedBy && token.usedBy.length > 0 ? (
+                            <div className="token-table-usedby-pills">
+                              {token.usedBy.map((item) => (
+                                <span className="glass-pill" key={item}>
+                                  {item}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="token-table-empty">—</span>
+                          )}
+                        </td>
                         <td className="token-table-actions">
                           <button
                             className="token-copy token-copy--sm"
@@ -738,6 +820,70 @@ function App() {
                           >
                             Copy JSON
                           </button>
+                          <button
+                            className="token-copy token-copy--sm subtle"
+                            type="button"
+                            aria-label={`Copy row for ${token.name} (table)`}
+                            onClick={async () => {
+                              try {
+                                await copyToClipboard(toTokenRowText(token))
+                                announce(`Copied ${token.name} row`)
+                              } catch {
+                                announce('Copy failed. Please try again.')
+                              }
+                            }}
+                          >
+                            Copy row
+                          </button>
+                          {editingTokenName === token.name ? (
+                            <>
+                              <button
+                                className="token-copy token-copy--sm"
+                                type="button"
+                                aria-label={`Save edits for ${token.name}`}
+                                onClick={() => {
+                                  const usedBy = editUsedBy
+                                    .split(',')
+                                    .map((entry) => entry.trim())
+                                    .filter((entry) => entry.length > 0)
+                                  setTokenOverrides((current) => ({
+                                    ...current,
+                                    [token.name]: {
+                                      value: editValue,
+                                      description: editDescription,
+                                      usedBy: usedBy.length > 0 ? usedBy : undefined,
+                                    },
+                                  }))
+                                  setEditingTokenName(null)
+                                  announce(`Saved local edits for ${token.name}`)
+                                }}
+                              >
+                                Save
+                              </button>
+                              <button
+                                className="token-copy token-copy--sm subtle"
+                                type="button"
+                                aria-label={`Cancel edits for ${token.name}`}
+                                onClick={() => setEditingTokenName(null)}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              className="token-copy token-copy--sm subtle"
+                              type="button"
+                              aria-label={`Edit ${token.name} (table)`}
+                              onClick={() => {
+                                setEditingTokenName(token.name)
+                                setEditValue(token.value)
+                                setEditDescription(token.description)
+                                setEditUsedBy((token.usedBy ?? []).join(', '))
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
