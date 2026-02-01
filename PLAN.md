@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Redo support for token edits (multi-step).
 - 2026-02-01: Undo for token edits (one-step history).
 - 2026-02-01: Import UX now includes inline validation and a schema hint.
 - 2026-02-01: Drag-and-drop / file picker support for importing edits JSON.
@@ -41,4 +42,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add multi-step history and a “redo” affordance.
+- Add `Cmd/Ctrl+Z` undo and `Cmd/Ctrl+Shift+Z` redo shortcuts (scoped to token table).

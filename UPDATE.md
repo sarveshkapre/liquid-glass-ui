@@ -18,6 +18,7 @@
 - Tokens: import now supports drag-and-drop and a file picker.
 - Tokens: import dialog now includes inline validation and a schema hint.
 - Tokens: added one-step undo for local token edits.
+- Tokens: added redo for local token edits/imports.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

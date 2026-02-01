@@ -279,7 +279,10 @@ function App() {
   const [tokenUsedBy, setTokenUsedBy] = useState('all')
   const [tokenGroup, setTokenGroup] = useState('all')
   const [tokenOverrides, setTokenOverrides] = useState<Record<string, Partial<TokenItem>>>({})
-  const [tokenOverrideHistory, setTokenOverrideHistory] = useState<
+  const [tokenOverrideUndoStack, setTokenOverrideUndoStack] = useState<
+    Array<Record<string, Partial<TokenItem>>>
+  >([])
+  const [tokenOverrideRedoStack, setTokenOverrideRedoStack] = useState<
     Array<Record<string, Partial<TokenItem>>>
   >([])
   const [editingTokenName, setEditingTokenName] = useState<string | null>(null)
@@ -375,19 +378,33 @@ function App() {
     updater: (current: Record<string, Partial<TokenItem>>) => Record<string, Partial<TokenItem>>,
   ) => {
     setTokenOverrides((current) => {
-      setTokenOverrideHistory((history) => [...history, current])
+      setTokenOverrideUndoStack((history) => [...history, current])
+      setTokenOverrideRedoStack([])
       return updater(current)
     })
   }
 
   const undoTokenOverride = () => {
-    setTokenOverrideHistory((history) => {
+    setTokenOverrideUndoStack((history) => {
       if (history.length === 0) return history
       const previous = history[history.length - 1]
+      setTokenOverrideRedoStack((redo) => [...redo, tokenOverrides])
       setTokenOverrides(previous)
       setEditingTokenName(null)
-      announce('Undid token edit')
+      announce('Undo')
       return history.slice(0, -1)
+    })
+  }
+
+  const redoTokenOverride = () => {
+    setTokenOverrideRedoStack((redo) => {
+      if (redo.length === 0) return redo
+      const next = redo[redo.length - 1]
+      setTokenOverrideUndoStack((history) => [...history, tokenOverrides])
+      setTokenOverrides(next)
+      setEditingTokenName(null)
+      announce('Redo')
+      return redo.slice(0, -1)
     })
   }
 
@@ -879,7 +896,7 @@ function App() {
                       </button>
                     </>
                   ) : null}
-                  {tokenOverrideHistory.length > 0 ? (
+                  {tokenOverrideUndoStack.length > 0 ? (
                     <button
                       className="token-copy token-copy--sm subtle"
                       type="button"
@@ -887,6 +904,16 @@ function App() {
                       aria-label="Undo last token edit"
                     >
                       Undo
+                    </button>
+                  ) : null}
+                  {tokenOverrideRedoStack.length > 0 ? (
+                    <button
+                      className="token-copy token-copy--sm subtle"
+                      type="button"
+                      onClick={redoTokenOverride}
+                      aria-label="Redo last token edit"
+                    >
+                      Redo
                     </button>
                   ) : null}
                   <button

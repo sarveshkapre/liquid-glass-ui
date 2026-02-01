@@ -24,3 +24,4 @@
 - Tokens: drag-and-drop + file picker import for edits JSON.
 - Tokens: inline validation and schema hint for edits import.
 - Tokens: undo support for local edits/imports.
+- Tokens: redo support for local edits/imports.

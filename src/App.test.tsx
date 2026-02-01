@@ -168,6 +168,9 @@ describe('App', () => {
 
     await user.click(screen.getByRole('button', { name: /undo last token edit/i }))
     expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /redo last token edit/i }))
+    expect(within(table).getByText('#000000')).toBeInTheDocument()
   })
 
   it('exports local token edits as JSON', async () => {
