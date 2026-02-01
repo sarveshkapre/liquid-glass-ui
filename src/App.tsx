@@ -68,6 +68,10 @@ function toCssVarName(tokenName: string) {
   return `--lg-${tokenName.replaceAll('.', '-')}`
 }
 
+function toTokenJson(token: TokenItem) {
+  return `${JSON.stringify(token, null, 2)}\n`
+}
+
 type Rgba = { r: number; g: number; b: number; a: number }
 
 function clamp01(value: number) {
@@ -578,6 +582,21 @@ function App() {
                   >
                     Copy CSS
                   </button>
+                  <button
+                    className="token-copy subtle"
+                    type="button"
+                    aria-label={`Copy JSON for ${token.name}`}
+                    onClick={async () => {
+                      try {
+                        await copyToClipboard(toTokenJson(token))
+                        announce(`Copied ${token.name} JSON`)
+                      } catch {
+                        announce('Copy failed. Please try again.')
+                      }
+                    }}
+                  >
+                    Copy JSON
+                  </button>
                 </div>
                 <p className="token-description">{token.description}</p>
                 {token.usedBy && token.usedBy.length > 0 ? (
@@ -703,6 +722,21 @@ function App() {
                             }}
                           >
                             Copy CSS
+                          </button>
+                          <button
+                            className="token-copy token-copy--sm subtle"
+                            type="button"
+                            aria-label={`Copy JSON for ${token.name} (table)`}
+                            onClick={async () => {
+                              try {
+                                await copyToClipboard(toTokenJson(token))
+                                announce(`Copied ${token.name} JSON`)
+                              } catch {
+                                announce('Copy failed. Please try again.')
+                              }
+                            }}
+                          >
+                            Copy JSON
                           </button>
                         </td>
                       </tr>

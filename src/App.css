@@ -530,6 +530,17 @@
   gap: 8px;
 }
 
+@media (max-width: 520px) {
+  .token-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .token-actions .token-copy {
+    width: 100%;
+  }
+}
+
 .component-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

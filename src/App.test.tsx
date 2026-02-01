@@ -58,6 +58,19 @@ describe('App', () => {
     expect(await screen.findByText(/copied glass\.blur\.24 value/i)).toBeInTheDocument()
   })
 
+  it('copies a token JSON snippet to the clipboard', async () => {
+    const user = userEvent.setup()
+    const writeTextSpy = vi.spyOn(navigator.clipboard, 'writeText')
+
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: 'Copy JSON for glass.blur.24' }))
+
+    await waitFor(() => {
+      expect(writeTextSpy).toHaveBeenCalledWith(expect.stringContaining('"name": "glass.blur.24"'))
+    })
+  })
+
   it('shows token usage chips', () => {
     render(<App />)
 

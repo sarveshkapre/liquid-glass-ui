@@ -11,6 +11,7 @@
 - Tokens: “Used by” chips on token cards to reduce drift between docs and UI.
 - Tokens: added a searchable token table with “used by” filtering.
 - Tokens: token table now supports group filtering and CSV export.
+- Tokens: added “Copy JSON” actions (cards + table).
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify
