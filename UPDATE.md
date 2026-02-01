@@ -14,6 +14,7 @@
 - Tokens: added “Copy JSON” actions (cards + table).
 - Tokens: token table now supports “Copy row” and local inline edits with reset.
 - Tokens: added “Export edits” to download local token overrides as JSON.
+- Tokens: added “Import edits” to rehydrate local token overrides from JSON.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

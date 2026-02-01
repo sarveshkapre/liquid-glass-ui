@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Import token edits JSON to rehydrate local overrides.
 - 2026-02-01: Export local token edits as JSON (shareable overrides).
 - 2026-02-01: Token table supports copy-row + local inline edits (with reset).
 - 2026-02-01: Copy JSON actions for tokens (cards + table).
@@ -37,4 +38,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add “import edits” (paste/drop JSON) for local token overrides.
+- Add drag-and-drop for importing edits JSON.

@@ -193,6 +193,28 @@ describe('App', () => {
     createObjectURLSpy.mockRestore()
   })
 
+  it('imports local token edits from JSON', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /import token edits json/i }))
+
+    const edits = {
+      version: 1,
+      overrides: {
+        'accent.coral': { value: '#000000' },
+      },
+    }
+
+    fireEvent.change(screen.getByRole('textbox', { name: /edits json/i }), {
+      target: { value: JSON.stringify(edits) },
+    })
+    await user.click(screen.getByRole('button', { name: /apply imported edits/i }))
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    expect(within(table).getByText('#000000')).toBeInTheDocument()
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 

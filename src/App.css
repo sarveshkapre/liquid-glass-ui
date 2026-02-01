@@ -519,6 +519,33 @@
   gap: 10px;
 }
 
+.token-import {
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--glass-bg-soft), transparent 20%);
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.token-import-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.token-import-title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.token-import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .token-table-scroll {
   border: 1px solid var(--glass-border);
   border-radius: 16px;

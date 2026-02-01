@@ -210,6 +210,8 @@ function App() {
   const [editValue, setEditValue] = useState('')
   const [editDescription, setEditDescription] = useState('')
   const [editUsedBy, setEditUsedBy] = useState('')
+  const [importOpen, setImportOpen] = useState(false)
+  const [importJson, setImportJson] = useState('')
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -483,6 +485,53 @@ function App() {
     }
   }
 
+  const importTokenEdits = () => {
+    try {
+      const parsed = JSON.parse(importJson) as unknown
+      if (!parsed || typeof parsed !== 'object') {
+        announce('Invalid edits JSON')
+        return
+      }
+
+      const overrides = (parsed as { overrides?: unknown }).overrides
+      if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
+        announce('Invalid edits JSON: missing overrides')
+        return
+      }
+
+      const allowedTokenNames = new Set(baseTokens.map((token) => token.name))
+      const nextOverrides: Record<string, Partial<TokenItem>> = {}
+
+      for (const [name, override] of Object.entries(overrides as Record<string, unknown>)) {
+        if (!allowedTokenNames.has(name)) continue
+        if (!override || typeof override !== 'object' || Array.isArray(override)) continue
+
+        const candidate = override as Partial<TokenItem>
+        const cleaned: Partial<TokenItem> = {}
+
+        if (typeof candidate.value === 'string') cleaned.value = candidate.value
+        if (typeof candidate.description === 'string') cleaned.description = candidate.description
+        if (
+          Array.isArray(candidate.usedBy) &&
+          candidate.usedBy.every((entry) => typeof entry === 'string' && entry.trim().length > 0)
+        ) {
+          cleaned.usedBy = candidate.usedBy
+        }
+
+        if (Object.keys(cleaned).length > 0) {
+          nextOverrides[name] = cleaned
+        }
+      }
+
+      setTokenOverrides((current) => ({ ...current, ...nextOverrides }))
+      setEditingTokenName(null)
+      announce(`Imported ${Object.keys(nextOverrides).length} token edits`)
+      setImportOpen(false)
+    } catch {
+      announce('Invalid edits JSON')
+    }
+  }
+
   return (
     <div className="app">
       <a className="skip-link" href="#main">
@@ -736,6 +785,14 @@ function App() {
                     </>
                   ) : null}
                   <button
+                    className="token-copy token-copy--sm subtle"
+                    type="button"
+                    onClick={() => setImportOpen(true)}
+                    aria-label="Import token edits JSON"
+                  >
+                    Import edits
+                  </button>
+                  <button
                     className="token-copy token-copy--sm"
                     type="button"
                     onClick={() => void downloadTokenCsv()}
@@ -748,6 +805,49 @@ function App() {
               <div className="token-table-note">
                 Local edits only (not saved, not exported to `public/tokens.json`).
               </div>
+              {importOpen ? (
+                <div className="token-import" role="dialog" aria-label="Import token edits">
+                  <div className="token-import-header">
+                    <div className="token-import-title">Import edits</div>
+                    <button
+                      className="token-copy token-copy--sm subtle"
+                      type="button"
+                      onClick={() => setImportOpen(false)}
+                      aria-label="Close import dialog"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <textarea
+                    className="token-table-textarea"
+                    value={importJson}
+                    onChange={(e) => setImportJson(e.target.value)}
+                    placeholder="Paste liquid-glass-token-edits.json contents here"
+                    aria-label="Edits JSON"
+                  />
+                  <div className="token-import-actions">
+                    <button
+                      className="token-copy token-copy--sm"
+                      type="button"
+                      onClick={importTokenEdits}
+                      aria-label="Apply imported edits"
+                    >
+                      Apply
+                    </button>
+                    <button
+                      className="token-copy token-copy--sm subtle"
+                      type="button"
+                      onClick={() => {
+                        setImportJson('')
+                        setImportOpen(false)
+                      }}
+                      aria-label="Cancel import"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : null}
 
               <div className="token-table-scroll">
                 <table aria-label="Token table">

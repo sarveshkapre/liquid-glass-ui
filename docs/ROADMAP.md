@@ -20,3 +20,4 @@
 - Tokens: group filtering and CSV export.
 - Tokens: copy-row and local inline edits in the token table.
 - Tokens: exported local token edits as JSON.
+- Tokens: imported local token edits from JSON.
