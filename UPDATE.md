@@ -5,6 +5,7 @@
 - Token export: `public/tokens.json` + `public/tokens.css` generated from `src/tokens.json` and exposed as download links.
 - Component cards: usage snippets in a disclosure with copy-to-clipboard.
 - Keyboard UX: skip-to-content link and consistent focus-visible rings.
+- Keyboard demo: focus the preview search input with `/` or `Ctrl+K`.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

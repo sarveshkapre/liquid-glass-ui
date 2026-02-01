@@ -78,4 +78,18 @@ describe('App', () => {
       expect(writeTextSpy).toHaveBeenCalledWith(expect.stringContaining('class="glass-card"'))
     })
   })
+
+  it('focuses the demo search input with / or Ctrl+K', () => {
+    render(<App />)
+
+    const input = screen.getByPlaceholderText('Search styles')
+
+    fireEvent.keyDown(window, { key: '/', code: 'Slash' })
+    expect(input).toHaveFocus()
+
+    input.blur()
+
+    fireEvent.keyDown(window, { key: 'k', code: 'KeyK', ctrlKey: true })
+    expect(input).toHaveFocus()
+  })
 })

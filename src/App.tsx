@@ -103,6 +103,7 @@ function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<number | null>(null)
+  const searchInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -115,6 +116,39 @@ function App() {
         window.clearTimeout(toastTimer.current)
       }
     }
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT')
+      ) {
+        return
+      }
+
+      if (event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault()
+        searchInputRef.current?.focus()
+        return
+      }
+
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        !event.altKey &&
+        event.key.toLowerCase() === 'k'
+      ) {
+        event.preventDefault()
+        searchInputRef.current?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const toggleThemeLabel = useMemo(
@@ -334,8 +368,24 @@ function App() {
                 </button>
                 <label className="glass-input">
                   <span className="sr-only">Search styles</span>
-                  <input type="text" placeholder="Search styles" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Search styles"
+                    aria-describedby="search-shortcuts"
+                    aria-keyshortcuts="Control+K Slash"
+                  />
                 </label>
+                <div className="demo-hint" id="search-shortcuts">
+                  Shortcut: <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd>
+                </div>
+                <button
+                  className="glass-button ghost"
+                  type="button"
+                  onClick={() => searchInputRef.current?.focus()}
+                >
+                  Jump to search
+                </button>
                 <div className="pill-row">
                   <span className="glass-pill">Blur 24</span>
                   <span className="glass-pill">Glow on</span>

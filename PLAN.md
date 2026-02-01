@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Keyboard demo — focus the preview search with `/` or `Ctrl+K`.
 - 2026-02-01: Keyboard UX polish (skip link + focus-visible rings) and component usage snippets.
 - 2026-02-01: Component cards include copyable usage snippets.
 - 2026-02-01: Export core tokens as downloadable `tokens.json` + `tokens.css`.
@@ -28,4 +29,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add keyboard interaction demos (focus, disclosure, and reduced-motion states).
+- Add reduced-motion demos (lift → opacity) and a “contrast check” note per token.
