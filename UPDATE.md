@@ -8,6 +8,7 @@
 - Keyboard demo: focus the preview search input with `/` or `Ctrl+K`.
 - Motion: toggle reduced/full motion; reduced motion removes hover “lift”.
 - A11y: added an in-app contrast helper for quick WCAG checks on common token pairs.
+- Tokens: “Used by” chips on token cards to reduce drift between docs and UI.
 - Test hygiene: explicit Testing Library cleanup per test; clipboard mocked in setup.
 
 ## Verify

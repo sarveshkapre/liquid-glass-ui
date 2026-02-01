@@ -41,6 +41,14 @@ async function main() {
     ) {
       throw new Error('Invalid token shape in src/tokens.json')
     }
+    if (
+      'usedBy' in token &&
+      token.usedBy !== undefined &&
+      (!Array.isArray(token.usedBy) ||
+        !token.usedBy.every((entry) => typeof entry === 'string' && entry.trim().length > 0))
+    ) {
+      throw new Error('Invalid token.usedBy in src/tokens.json')
+    }
     return `  ${toCssVarName(token.name)}: ${token.value};`
   })
 

@@ -55,6 +55,13 @@ describe('App', () => {
     expect(await screen.findByText(/copied glass\.blur\.24 value/i)).toBeInTheDocument()
   })
 
+  it('shows token usage chips', () => {
+    render(<App />)
+
+    expect(screen.getByLabelText(/used by for glass\.blur\.24/i)).toBeInTheDocument()
+    expect(screen.getAllByText('Used by').length).toBeGreaterThan(0)
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 

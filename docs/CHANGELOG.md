@@ -9,3 +9,4 @@
 - Keyboard demo: focus the preview search input with `/` or `Ctrl+K`.
 - Motion: toggle reduced/full motion; reduced motion removes hover “lift”.
 - Added an in-app contrast helper for quick WCAG checks on common token pairs.
+- Token cards now show “Used by” chips to keep examples and tokens in sync.

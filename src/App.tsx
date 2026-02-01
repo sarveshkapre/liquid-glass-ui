@@ -9,6 +9,7 @@ type TokenItem = {
   name: string
   value: string
   description: string
+  usedBy?: string[]
 }
 
 type ComponentItem = {
@@ -506,6 +507,18 @@ function App() {
                   </button>
                 </div>
                 <p className="token-description">{token.description}</p>
+                {token.usedBy && token.usedBy.length > 0 ? (
+                  <div className="token-usedby" aria-label={`Used by for ${token.name}`}>
+                    <span className="token-usedby-label">Used by</span>
+                    <div className="token-usedby-pills">
+                      {token.usedBy.map((item) => (
+                        <span className="glass-pill" key={item}>
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </article>
             ))}
           </div>

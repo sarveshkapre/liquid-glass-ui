@@ -373,6 +373,25 @@
   font-size: 0.9rem;
 }
 
+.token-usedby {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.token-usedby-label {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.token-usedby-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .component-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
