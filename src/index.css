@@ -1,0 +1,73 @@
+:root {
+  font-family: var(--font-body);
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light dark;
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Space Grotesk', system-ui, sans-serif;
+
+  --bg: radial-gradient(circle at top, #122334, #0b111a 55%, #070a11 100%);
+  --text: #f4f8fb;
+  --text-muted: #b3c1d3;
+  --accent: #7ee5ff;
+  --accent-contrast: #071722;
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-bg-soft: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.16);
+  --glass-highlight: rgba(255, 255, 255, 0.18);
+  --shadow-soft: 0 18px 45px rgba(4, 14, 23, 0.45);
+  --shadow-strong: 0 25px 60px rgba(4, 14, 23, 0.6);
+}
+
+[data-theme='light'] {
+  --bg: radial-gradient(circle at top, #ffffff, #e9f1f7 55%, #dbe8f1 100%);
+  --text: #1d2936;
+  --text-muted: #5f6c7d;
+  --accent: #2666ff;
+  --accent-contrast: #f6f7ff;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-soft: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --shadow-soft: 0 18px 45px rgba(29, 41, 54, 0.12);
+  --shadow-strong: 0 25px 60px rgba(29, 41, 54, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
