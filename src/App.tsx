@@ -279,6 +279,9 @@ function App() {
   const [tokenUsedBy, setTokenUsedBy] = useState('all')
   const [tokenGroup, setTokenGroup] = useState('all')
   const [tokenOverrides, setTokenOverrides] = useState<Record<string, Partial<TokenItem>>>({})
+  const [tokenOverrideHistory, setTokenOverrideHistory] = useState<
+    Array<Record<string, Partial<TokenItem>>>
+  >([])
   const [editingTokenName, setEditingTokenName] = useState<string | null>(null)
   const [editValue, setEditValue] = useState('')
   const [editDescription, setEditDescription] = useState('')
@@ -367,6 +370,26 @@ function App() {
       return override ? { ...token, ...override } : token
     })
   }, [tokenOverrides])
+
+  const applyTokenOverrides = (
+    updater: (current: Record<string, Partial<TokenItem>>) => Record<string, Partial<TokenItem>>,
+  ) => {
+    setTokenOverrides((current) => {
+      setTokenOverrideHistory((history) => [...history, current])
+      return updater(current)
+    })
+  }
+
+  const undoTokenOverride = () => {
+    setTokenOverrideHistory((history) => {
+      if (history.length === 0) return history
+      const previous = history[history.length - 1]
+      setTokenOverrides(previous)
+      setEditingTokenName(null)
+      announce('Undid token edit')
+      return history.slice(0, -1)
+    })
+  }
 
   const contrastOptions = useMemo(() => {
     const baseDefaults =
@@ -569,7 +592,7 @@ function App() {
       announce(result.errors[0] ?? 'Invalid edits JSON')
       return
     }
-    setTokenOverrides((current) => ({ ...current, ...result.overrides }))
+    applyTokenOverrides((current) => ({ ...current, ...result.overrides }))
     setEditingTokenName(null)
     announce(`Imported ${Object.keys(result.overrides).length} token edits`)
     setImportOpen(false)
@@ -846,7 +869,7 @@ function App() {
                         className="token-copy token-copy--sm subtle"
                         type="button"
                         onClick={() => {
-                          setTokenOverrides({})
+                          applyTokenOverrides(() => ({}))
                           setEditingTokenName(null)
                           announce('Reset local token edits')
                         }}
@@ -855,6 +878,16 @@ function App() {
                         Reset edits
                       </button>
                     </>
+                  ) : null}
+                  {tokenOverrideHistory.length > 0 ? (
+                    <button
+                      className="token-copy token-copy--sm subtle"
+                      type="button"
+                      onClick={undoTokenOverride}
+                      aria-label="Undo last token edit"
+                    >
+                      Undo
+                    </button>
                   ) : null}
                   <button
                     className="token-copy token-copy--sm subtle"
@@ -1113,7 +1146,7 @@ function App() {
                                     .split(',')
                                     .map((entry) => entry.trim())
                                     .filter((entry) => entry.length > 0)
-                                  setTokenOverrides((current) => ({
+                                  applyTokenOverrides((current) => ({
                                     ...current,
                                     [token.name]: {
                                       value: editValue,

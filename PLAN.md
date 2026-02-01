@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-01: Undo for token edits (one-step history).
 - 2026-02-01: Import UX now includes inline validation and a schema hint.
 - 2026-02-01: Drag-and-drop / file picker support for importing edits JSON.
 - 2026-02-01: Import token edits JSON to rehydrate local overrides.
@@ -40,4 +41,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add a lightweight “edit history” (undo last edit/import) for experimentation.
+- Add multi-step history and a “redo” affordance.

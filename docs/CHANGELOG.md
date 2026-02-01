@@ -18,3 +18,4 @@
 - Token table now supports importing edits JSON.
 - Import supports drag-and-drop and a file picker.
 - Import dialog now includes inline validation and a schema hint.
+- Token table now supports undo for local edits/imports.

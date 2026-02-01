@@ -166,7 +166,7 @@ describe('App', () => {
 
     expect(within(table).getByText('#000000')).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /reset local token edits/i }))
+    await user.click(screen.getByRole('button', { name: /undo last token edit/i }))
     expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
   })
 
