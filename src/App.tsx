@@ -212,6 +212,7 @@ function App() {
   const [editUsedBy, setEditUsedBy] = useState('')
   const [importOpen, setImportOpen] = useState(false)
   const [importJson, setImportJson] = useState('')
+  const [isImportDragActive, setIsImportDragActive] = useState(false)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -532,6 +533,35 @@ function App() {
     }
   }
 
+  const loadImportFile = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith('.json')) {
+      announce('Import expects a .json file')
+      return
+    }
+    if (file.size > 250_000) {
+      announce('Import file is too large')
+      return
+    }
+    try {
+      let text = ''
+      if (typeof file.text === 'function') {
+        text = await file.text()
+      }
+      if (!text || text === '[object File]') {
+        text = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(String(reader.result ?? ''))
+          reader.onerror = () => reject(reader.error ?? new Error('Failed to read file'))
+          reader.readAsText(file)
+        })
+      }
+      setImportJson(text)
+      announce('Loaded edits JSON')
+    } catch {
+      announce('Failed to read file')
+    }
+  }
+
   return (
     <div className="app">
       <a className="skip-link" href="#main">
@@ -806,7 +836,24 @@ function App() {
                 Local edits only (not saved, not exported to `public/tokens.json`).
               </div>
               {importOpen ? (
-                <div className="token-import" role="dialog" aria-label="Import token edits">
+                <div
+                  className={`token-import ${isImportDragActive ? 'token-import--active' : ''}`}
+                  role="dialog"
+                  aria-label="Import token edits"
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    setIsImportDragActive(true)
+                  }}
+                  onDragLeave={() => setIsImportDragActive(false)}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    setIsImportDragActive(false)
+                    const [file] = Array.from(e.dataTransfer.files)
+                    if (file) {
+                      void loadImportFile(file)
+                    }
+                  }}
+                >
                   <div className="token-import-header">
                     <div className="token-import-title">Import edits</div>
                     <button
@@ -817,6 +864,24 @@ function App() {
                     >
                       Close
                     </button>
+                  </div>
+                  <div className="token-import-hint">
+                    Drop a <code>.json</code> file here or paste below.
+                    <label className="token-import-file">
+                      <span className="sr-only">Choose edits JSON file</span>
+                      <input
+                        type="file"
+                        accept="application/json,.json"
+                        onChange={(e) => {
+                          const [file] = Array.from(e.target.files ?? [])
+                          if (file) {
+                            void loadImportFile(file)
+                          }
+                          e.currentTarget.value = ''
+                        }}
+                      />
+                      Choose file
+                    </label>
                   </div>
                   <textarea
                     className="token-table-textarea"

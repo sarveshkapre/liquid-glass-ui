@@ -21,3 +21,4 @@
 - Tokens: copy-row and local inline edits in the token table.
 - Tokens: exported local token edits as JSON.
 - Tokens: imported local token edits from JSON.
+- Tokens: drag-and-drop + file picker import for edits JSON.

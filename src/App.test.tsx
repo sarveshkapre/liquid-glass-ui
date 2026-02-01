@@ -215,6 +215,38 @@ describe('App', () => {
     expect(within(table).getByText('#000000')).toBeInTheDocument()
   })
 
+  it('imports edits via drag-and-drop JSON file', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /import token edits json/i }))
+
+    const edits = JSON.stringify({
+      version: 1,
+      overrides: {
+        'accent.coral': { value: '#000000' },
+      },
+    })
+
+    const file = new File([edits], 'liquid-glass-token-edits.json', {
+      type: 'application/json',
+    })
+
+    const dialog = screen.getByRole('dialog', { name: /import token edits/i })
+    fireEvent.drop(dialog, { dataTransfer: { files: [file] } })
+
+    await waitFor(() => {
+      expect((screen.getByRole('textbox', { name: /edits json/i }) as HTMLTextAreaElement).value).toContain(
+        'accent.coral',
+      )
+    })
+
+    await user.click(screen.getByRole('button', { name: /apply imported edits/i }))
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    expect(within(table).getByText('#000000')).toBeInTheDocument()
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 

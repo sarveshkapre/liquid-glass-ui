@@ -16,3 +16,4 @@
 - Token table now supports “Copy row” and local inline edits (not persisted).
 - Token table now supports exporting local edits as JSON.
 - Token table now supports importing edits JSON.
+- Import supports drag-and-drop and a file picker.
