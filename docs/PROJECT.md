@@ -11,5 +11,6 @@
 - Release build: `make release`
 
 ## Notes
+- Node.js baseline: `>=20.19`.
 - Static build output is in `dist/`.
 - Docker builds run `npm ci` and `npm run build`.

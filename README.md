@@ -9,6 +9,8 @@ Apple-inspired glassmorphism component showcase with tokens, a11y guidance, and 
 - Accessibility guardrails baked into the UI.
 
 ## Quickstart
+Requires Node.js `>=20.19`.
+
 ```bash
 make setup
 make dev

@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "engines": {
-    "node": ">=20.11 <21"
+    "node": ">=20.19"
   },
   "scripts": {
     "generate:tokens": "node ./scripts/generate-tokens.mjs",

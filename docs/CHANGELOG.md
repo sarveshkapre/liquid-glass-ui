@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## Unreleased
+- CI now runs on Node.js `20.19.0` to match Vite/Vitest/jsdom engine requirements.
+- Project runtime baseline now documents Node.js `>=20.19` (`.nvmrc`, package engines, docs).
 - Initial Liquid Glass UI landing page with tokens, components, and a11y notes.
 - Token cards now support copy-to-clipboard (value + CSS snippet) with toast feedback.
 - Export core tokens as downloadable `tokens.json` and `tokens.css`.
