@@ -1,14 +1,14 @@
 # ROADMAP
 
 ## Next
-- Ship a real component gallery with copy-to-clipboard component snippets (initial snippets shipped).
 - Add keyboard interaction demos (focus navigation + reduced-motion variants).
-- Add searchable token table with “used by” filtering.
-- Add CSV export for tokens.
-- Add “export overrides” for local token edits.
-- Add “import overrides” to rehydrate local token edits.
+- Add a Playwright smoke test for token edit flows (edit, undo, redo, import, export).
+- Break `src/App.tsx` into smaller components/hooks to reduce maintenance cost.
 
 ## Shipped
+- Token table now shows edits status (override count + undo/redo depth).
+- Token edit history is now bounded and uses deterministic undo/redo snapshots.
+- CI Node runtime now targets `20.19.0`; project baseline is `>=20.19`.
 - Exported core tokens as downloadable JSON and CSS files.
 - Component usage snippets with copy-to-clipboard.
 - Keyboard UX polish: skip link + focus-visible rings.

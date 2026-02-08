@@ -155,6 +155,9 @@ describe('App', () => {
     render(<App />)
 
     const table = screen.getByRole('table', { name: /token table/i })
+    expect(
+      screen.getByText(/edits status: 0 overrides \| undo depth 0 \| redo depth 0/i),
+    ).toBeInTheDocument()
 
     await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
 
@@ -165,12 +168,21 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Save edits for accent.coral' }))
 
     expect(within(table).getByText('#000000')).toBeInTheDocument()
+    expect(
+      screen.getByText(/edits status: 1 overrides \| undo depth 1 \| redo depth 0/i),
+    ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /undo last token edit/i }))
     expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
+    expect(
+      screen.getByText(/edits status: 0 overrides \| undo depth 0 \| redo depth 1/i),
+    ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /redo last token edit/i }))
     expect(within(table).getByText('#000000')).toBeInTheDocument()
+    expect(
+      screen.getByText(/edits status: 1 overrides \| undo depth 1 \| redo depth 0/i),
+    ).toBeInTheDocument()
   })
 
   it('supports Ctrl+Z / Ctrl+Shift+Z shortcuts inside the token table', async () => {
@@ -193,6 +205,30 @@ describe('App', () => {
 
     fireEvent.keyDown(exportCsv, { key: 'z', ctrlKey: true, shiftKey: true })
     expect(within(table).getByText('#000000')).toBeInTheDocument()
+  })
+
+  it('resets local token edits and clears edit-status counts', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+
+    const valueInput = screen.getByRole('textbox', { name: 'Edit value for accent.coral' })
+    await user.clear(valueInput)
+    await user.type(valueInput, '#000000')
+    await user.click(screen.getByRole('button', { name: 'Save edits for accent.coral' }))
+
+    expect(
+      screen.getByText(/edits status: 1 overrides \| undo depth 1 \| redo depth 0/i),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /reset local token edits/i }))
+
+    expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
+    expect(
+      screen.getByText(/edits status: 0 overrides \| undo depth 2 \| redo depth 0/i),
+    ).toBeInTheDocument()
   })
 
   it('exports local token edits as JSON', async () => {

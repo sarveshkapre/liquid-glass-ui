@@ -21,6 +21,9 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-08: Token table adds a live edits footer (override count + undo/redo depth).
+- 2026-02-08: Token override history is now bounded with deterministic undo/redo snapshots.
+- 2026-02-08: CI and project runtime baseline aligned to Node.js `20.19.0` / `>=20.19`.
 - 2026-02-01: Token table supports `Ctrl/Cmd+Z` undo and `Ctrl/Cmd+Shift+Z` redo.
 - 2026-02-01: Redo support for token edits (multi-step).
 - 2026-02-01: Undo for token edits (one-step history).
@@ -43,4 +46,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add a small “edits” footer showing undo/redo depth and current override count.
+- Add a Playwright smoke test for token table edit/import/export flows.

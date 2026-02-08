@@ -88,6 +88,18 @@ type ImportEditsResult = {
   errors: string[]
 }
 
+const TOKEN_OVERRIDE_HISTORY_LIMIT = 100
+
+function pushHistorySnapshot(
+  history: Array<Record<string, Partial<TokenItem>>>,
+  snapshot: Record<string, Partial<TokenItem>>,
+) {
+  const next = [...history, snapshot]
+  return next.length > TOKEN_OVERRIDE_HISTORY_LIMIT
+    ? next.slice(next.length - TOKEN_OVERRIDE_HISTORY_LIMIT)
+    : next
+}
+
 function parseTokenEditsJson(jsonText: string, allowedTokenNames: Set<string>): ImportEditsResult {
   const trimmed = jsonText.trim()
   if (!trimmed) {
@@ -279,6 +291,7 @@ function App() {
   const [tokenUsedBy, setTokenUsedBy] = useState('all')
   const [tokenGroup, setTokenGroup] = useState('all')
   const [tokenOverrides, setTokenOverrides] = useState<Record<string, Partial<TokenItem>>>({})
+  const tokenOverridesRef = useRef(tokenOverrides)
   const [tokenOverrideUndoStack, setTokenOverrideUndoStack] = useState<
     Array<Record<string, Partial<TokenItem>>>
   >([])
@@ -302,6 +315,10 @@ function App() {
     document.documentElement.dataset.motion = motion
     window.localStorage.setItem('lg-motion', motion)
   }, [motion])
+
+  useEffect(() => {
+    tokenOverridesRef.current = tokenOverrides
+  }, [tokenOverrides])
 
   useEffect(() => {
     return () => {
@@ -378,7 +395,7 @@ function App() {
     updater: (current: Record<string, Partial<TokenItem>>) => Record<string, Partial<TokenItem>>,
   ) => {
     setTokenOverrides((current) => {
-      setTokenOverrideUndoStack((history) => [...history, current])
+      setTokenOverrideUndoStack((history) => pushHistorySnapshot(history, current))
       setTokenOverrideRedoStack([])
       return updater(current)
     })
@@ -388,7 +405,9 @@ function App() {
     setTokenOverrideUndoStack((history) => {
       if (history.length === 0) return history
       const previous = history[history.length - 1]
-      setTokenOverrideRedoStack((redo) => [...redo, tokenOverrides])
+      setTokenOverrideRedoStack((redo) =>
+        pushHistorySnapshot(redo, tokenOverridesRef.current),
+      )
       setTokenOverrides(previous)
       setEditingTokenName(null)
       announce('Undo')
@@ -400,13 +419,17 @@ function App() {
     setTokenOverrideRedoStack((redo) => {
       if (redo.length === 0) return redo
       const next = redo[redo.length - 1]
-      setTokenOverrideUndoStack((history) => [...history, tokenOverrides])
+      setTokenOverrideUndoStack((history) =>
+        pushHistorySnapshot(history, tokenOverridesRef.current),
+      )
       setTokenOverrides(next)
       setEditingTokenName(null)
       announce('Redo')
       return redo.slice(0, -1)
     })
   }
+
+  const tokenOverrideCount = Object.keys(tokenOverrides).length
 
   const contrastOptions = useMemo(() => {
     const baseDefaults =
@@ -897,7 +920,7 @@ function App() {
                   Showing {filteredTokens.length} of {tokens.length}
                 </div>
                 <div className="token-table-meta-actions">
-                  {Object.keys(tokenOverrides).length > 0 ? (
+                  {tokenOverrideCount > 0 ? (
                     <>
                       <button
                         className="token-copy token-copy--sm subtle"
@@ -959,8 +982,14 @@ function App() {
                   </button>
                 </div>
               </div>
-              <div className="token-table-note">
-                Local edits only (not saved, not exported to `public/tokens.json`).
+              <div className="token-table-note-row">
+                <div className="token-table-note">
+                  Local edits only (not saved, not exported to `public/tokens.json`).
+                </div>
+                <div className="token-table-edits-status" role="status" aria-live="polite">
+                  Edits status: {tokenOverrideCount} overrides | undo depth{' '}
+                  {tokenOverrideUndoStack.length} | redo depth {tokenOverrideRedoStack.length}
+                </div>
               </div>
               {importOpen ? (
                 <div

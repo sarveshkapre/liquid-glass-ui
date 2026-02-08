@@ -492,6 +492,16 @@
   font-size: 0.85rem;
 }
 
+.token-table-note-row {
+  display: grid;
+  gap: 8px;
+}
+
+.token-table-edits-status {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
 .token-table-input,
 .token-table-textarea {
   width: 100%;
