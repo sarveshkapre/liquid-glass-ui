@@ -9,10 +9,15 @@
 - GitHub Actions runs #21558224112, #21810261615, #21810261616, #21810261623
 
 ## Candidate Features To Do
-- [ ] P1: Split `src/App.tsx` view sections into smaller components (`TokensSection`, `ComponentsSection`, `GuidelinesSection`) now that shared logic is extracted.
+- [ ] P0 (selected): Add reduced-transparency support (system preference + topbar toggle) and map it to CSS variables (blur + opacity) for accessibility and performance.
+- [ ] P1 (selected): Split `src/App.tsx` view sections into smaller components (`TokensSection`, `ComponentsSection`, `GuidelinesSection`) while keeping DOM structure/ARIA stable.
+- [ ] P1 (selected): Extend Playwright coverage for drag-and-drop import and keyboard shortcut undo/redo paths (`Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z`).
+- [ ] P2 (selected): Add focused hook tests for `useTokenOverrides` history limit and stack transitions (redo cleared on new edit).
 - [ ] P2: Expand keyboard demos with explicit table-navigation/editing patterns and reduced-motion variants.
-- [ ] P2: Extend Playwright coverage for drag-and-drop import and keyboard shortcut undo/redo paths.
-- [ ] P2: Add focused hook tests for `useTokenOverrides` history limit and stack transitions.
+- [ ] P3: Extract shared clipboard/download helpers into `src/utils` for reuse and easier test coverage.
+- [ ] P3: Add optional high-contrast CSS affordances (`prefers-contrast: more`) for borders/focus rings on glass surfaces.
+- [ ] P3: Add a JSON schema artifact for token-edits import (and validate `version === 1`).
+- [ ] P3: Add `aria-keyshortcuts` hints for undo/redo within the token table surface.
 
 ## Implemented
 - [x] 2026-02-09: Added Playwright browser smoke test for token edit, undo/redo, import, and export flows.
