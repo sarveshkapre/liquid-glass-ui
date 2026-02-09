@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
+import { useTokenOverrides } from './hooks/useTokenOverrides'
 import tokenData from './tokens.json'
+import { compositeOver, contrastRatio, parseColor } from './utils/contrast'
 
 type Theme = 'light' | 'dark'
 type Motion = 'full' | 'reduced'
@@ -88,19 +90,10 @@ type ImportEditsResult = {
   errors: string[]
 }
 
-const TOKEN_OVERRIDE_HISTORY_LIMIT = 100
-
-function pushHistorySnapshot(
-  history: Array<Record<string, Partial<TokenItem>>>,
-  snapshot: Record<string, Partial<TokenItem>>,
-) {
-  const next = [...history, snapshot]
-  return next.length > TOKEN_OVERRIDE_HISTORY_LIMIT
-    ? next.slice(next.length - TOKEN_OVERRIDE_HISTORY_LIMIT)
-    : next
-}
-
-function parseTokenEditsJson(jsonText: string, allowedTokenNames: Set<string>): ImportEditsResult {
+function parseTokenEditsJson(
+  jsonText: string,
+  allowedTokenNames: Set<string>,
+): ImportEditsResult {
   const trimmed = jsonText.trim()
   if (!trimmed) {
     return { overrides: {}, ignoredCount: 0, errors: ['Paste edits JSON to import.'] }
@@ -162,77 +155,6 @@ function parseTokenEditsJson(jsonText: string, allowedTokenNames: Set<string>): 
   return { overrides: nextOverrides, ignoredCount, errors }
 }
 
-type Rgba = { r: number; g: number; b: number; a: number }
-
-function clamp01(value: number) {
-  return Math.max(0, Math.min(1, value))
-}
-
-function parseHexColor(input: string): Rgba | null {
-  const hex = input.replace('#', '').trim()
-  if (hex.length === 3) {
-    const r = Number.parseInt(hex[0] + hex[0], 16)
-    const g = Number.parseInt(hex[1] + hex[1], 16)
-    const b = Number.parseInt(hex[2] + hex[2], 16)
-    return { r, g, b, a: 1 }
-  }
-  if (hex.length === 6) {
-    const r = Number.parseInt(hex.slice(0, 2), 16)
-    const g = Number.parseInt(hex.slice(2, 4), 16)
-    const b = Number.parseInt(hex.slice(4, 6), 16)
-    return { r, g, b, a: 1 }
-  }
-  return null
-}
-
-function parseRgbColor(input: string): Rgba | null {
-  const match = input
-    .trim()
-    .match(/^rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)(?:\s*,\s*([0-9.]+)\s*)?\)$/i)
-  if (!match) return null
-  const r = Number(match[1])
-  const g = Number(match[2])
-  const b = Number(match[3])
-  const a = match[4] === undefined ? 1 : clamp01(Number(match[4]))
-  if (![r, g, b, a].every((n) => Number.isFinite(n))) return null
-  return { r, g, b, a }
-}
-
-function parseColor(input: string): Rgba | null {
-  if (input.trim().startsWith('#')) return parseHexColor(input)
-  if (input.trim().startsWith('rgb')) return parseRgbColor(input)
-  return null
-}
-
-function compositeOver(base: Rgba, overlay: Rgba): Rgba {
-  const a = overlay.a + base.a * (1 - overlay.a)
-  if (a <= 0) return { r: 0, g: 0, b: 0, a: 0 }
-  const r = (overlay.r * overlay.a + base.r * base.a * (1 - overlay.a)) / a
-  const g = (overlay.g * overlay.a + base.g * base.a * (1 - overlay.a)) / a
-  const b = (overlay.b * overlay.a + base.b * base.a * (1 - overlay.a)) / a
-  return { r, g, b, a }
-}
-
-function srgbToLinear(c: number) {
-  const v = c / 255
-  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
-}
-
-function relativeLuminance(color: Rgba) {
-  const r = srgbToLinear(color.r)
-  const g = srgbToLinear(color.g)
-  const b = srgbToLinear(color.b)
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b
-}
-
-function contrastRatio(fg: Rgba, bg: Rgba) {
-  const l1 = relativeLuminance(fg)
-  const l2 = relativeLuminance(bg)
-  const lighter = Math.max(l1, l2)
-  const darker = Math.min(l1, l2)
-  return (lighter + 0.05) / (darker + 0.05)
-}
-
 async function copyToClipboard(text: string) {
   if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(text)
@@ -290,14 +212,15 @@ function App() {
   const [tokenQuery, setTokenQuery] = useState('')
   const [tokenUsedBy, setTokenUsedBy] = useState('all')
   const [tokenGroup, setTokenGroup] = useState('all')
-  const [tokenOverrides, setTokenOverrides] = useState<Record<string, Partial<TokenItem>>>({})
-  const tokenOverridesRef = useRef(tokenOverrides)
-  const [tokenOverrideUndoStack, setTokenOverrideUndoStack] = useState<
-    Array<Record<string, Partial<TokenItem>>>
-  >([])
-  const [tokenOverrideRedoStack, setTokenOverrideRedoStack] = useState<
-    Array<Record<string, Partial<TokenItem>>>
-  >([])
+  const {
+    applyTokenOverrides,
+    redoTokenOverride,
+    tokenOverrideCount,
+    tokenOverrideRedoStack,
+    tokenOverrideUndoStack,
+    tokenOverrides,
+    undoTokenOverride,
+  } = useTokenOverrides()
   const [editingTokenName, setEditingTokenName] = useState<string | null>(null)
   const [editValue, setEditValue] = useState('')
   const [editDescription, setEditDescription] = useState('')
@@ -315,10 +238,6 @@ function App() {
     document.documentElement.dataset.motion = motion
     window.localStorage.setItem('lg-motion', motion)
   }, [motion])
-
-  useEffect(() => {
-    tokenOverridesRef.current = tokenOverrides
-  }, [tokenOverrides])
 
   useEffect(() => {
     return () => {
@@ -391,45 +310,19 @@ function App() {
     })
   }, [tokenOverrides])
 
-  const applyTokenOverrides = (
-    updater: (current: Record<string, Partial<TokenItem>>) => Record<string, Partial<TokenItem>>,
-  ) => {
-    setTokenOverrides((current) => {
-      setTokenOverrideUndoStack((history) => pushHistorySnapshot(history, current))
-      setTokenOverrideRedoStack([])
-      return updater(current)
-    })
+  const handleUndoTokenOverride = () => {
+    if (tokenOverrideUndoStack.length === 0) return
+    undoTokenOverride()
+    setEditingTokenName(null)
+    announce('Undo')
   }
 
-  const undoTokenOverride = () => {
-    setTokenOverrideUndoStack((history) => {
-      if (history.length === 0) return history
-      const previous = history[history.length - 1]
-      setTokenOverrideRedoStack((redo) =>
-        pushHistorySnapshot(redo, tokenOverridesRef.current),
-      )
-      setTokenOverrides(previous)
-      setEditingTokenName(null)
-      announce('Undo')
-      return history.slice(0, -1)
-    })
+  const handleRedoTokenOverride = () => {
+    if (tokenOverrideRedoStack.length === 0) return
+    redoTokenOverride()
+    setEditingTokenName(null)
+    announce('Redo')
   }
-
-  const redoTokenOverride = () => {
-    setTokenOverrideRedoStack((redo) => {
-      if (redo.length === 0) return redo
-      const next = redo[redo.length - 1]
-      setTokenOverrideUndoStack((history) =>
-        pushHistorySnapshot(history, tokenOverridesRef.current),
-      )
-      setTokenOverrides(next)
-      setEditingTokenName(null)
-      announce('Redo')
-      return redo.slice(0, -1)
-    })
-  }
-
-  const tokenOverrideCount = Object.keys(tokenOverrides).length
 
   const contrastOptions = useMemo(() => {
     const baseDefaults =
@@ -864,9 +757,9 @@ function App() {
 
               event.preventDefault()
               if (event.shiftKey) {
-                redoTokenOverride()
+                handleRedoTokenOverride()
               } else {
-                undoTokenOverride()
+                handleUndoTokenOverride()
               }
             }}
           >
@@ -948,7 +841,7 @@ function App() {
                     <button
                       className="token-copy token-copy--sm subtle"
                       type="button"
-                      onClick={undoTokenOverride}
+                      onClick={handleUndoTokenOverride}
                       aria-label="Undo last token edit"
                     >
                       Undo
@@ -958,7 +851,7 @@ function App() {
                     <button
                       className="token-copy token-copy--sm subtle"
                       type="button"
-                      onClick={redoTokenOverride}
+                      onClick={handleRedoTokenOverride}
                       aria-label="Redo last token edit"
                     >
                       Redo

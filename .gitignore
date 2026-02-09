@@ -9,3 +9,5 @@ yarn-error.log*
 .pnpm-debug.log*
 .vscode
 .idea
+playwright-report
+test-results
