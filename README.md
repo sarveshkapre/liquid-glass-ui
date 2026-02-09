@@ -7,6 +7,7 @@ Apple-inspired glassmorphism component showcase with tokens, a11y guidance, and 
 - Responsive component gallery with live previews.
 - Dark/light mode toggle with persistent preference.
 - Accessibility guardrails baked into the UI.
+- Browser smoke coverage for token edit/import/export flows.
 
 ## Quickstart
 Requires Node.js `>=20.19`.
@@ -24,6 +25,12 @@ make build
 ## Quality Gate
 ```bash
 make check
+```
+
+## Browser Smoke Test
+```bash
+make test-e2e
+# or: npm run test:e2e
 ```
 
 ## Docker

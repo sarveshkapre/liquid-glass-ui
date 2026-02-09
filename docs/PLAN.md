@@ -7,9 +7,12 @@ Ship a single-page component showcase that documents Liquid Glass tokens, sample
 - Vite + React + TypeScript
 - CSS variables and custom classes (no UI framework)
 - Vitest + Testing Library
+- Playwright (Chromium smoke path)
 
 ## Architecture
-- `src/App.tsx` renders all sections with small data arrays.
+- `src/App.tsx` renders all sections and composes app-level interactions.
+- `src/hooks/useTokenOverrides.ts` manages token override history + undo/redo stacks.
+- `src/utils/contrast.ts` holds reusable color parsing/compositing/contrast math.
 - `src/index.css` holds global tokens and theme variables.
 - `src/App.css` holds component/layout styling.
 - Theme is stored in `localStorage` and applied via `data-theme` on `html`.

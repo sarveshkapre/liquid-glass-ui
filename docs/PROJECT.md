@@ -4,6 +4,7 @@
 - Setup: `make setup`
 - Dev: `make dev`
 - Test: `make test`
+- Browser smoke test: `make test-e2e` (or `npm run test:e2e`)
 - Lint: `make lint`
 - Typecheck: `make typecheck`
 - Build: `make build`

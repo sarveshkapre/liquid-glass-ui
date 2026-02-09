@@ -2,10 +2,14 @@
 
 ## Next
 - Add keyboard interaction demos (focus navigation + reduced-motion variants).
-- Add a Playwright smoke test for token edit flows (edit, undo, redo, import, export).
-- Break `src/App.tsx` into smaller components/hooks to reduce maintenance cost.
+- Split `src/App.tsx` view sections into smaller components after hook/util extraction.
+- Expand Playwright coverage for drag-and-drop import and keyboard shortcut paths.
 
 ## Shipped
+- Playwright smoke test now covers token edit, undo/redo, import, and export flows.
+- CI now runs Node matrix checks (`20.19.0`, `22.x`) and a dedicated Playwright UI smoke job.
+- Extracted token override history logic into `src/hooks/useTokenOverrides.ts`.
+- Extracted contrast parsing/compositing math into `src/utils/contrast.ts` with unit tests.
 - CodeQL workflow upgraded to `github/codeql-action@v4` ahead of v3 deprecation.
 - Token table now shows edits status (override count + undo/redo depth).
 - Token edit history is now bounded and uses deterministic undo/redo snapshots.

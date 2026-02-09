@@ -14,6 +14,7 @@ Liquid Glass UI is a reference component showcase for frosted, Apple-inspired su
 - Lint: `make lint`
 - Typecheck: `make typecheck`
 - Test: `make test`
+- Browser smoke: `make test-e2e`
 - Build: `make build`
 - Quality gate: `make check`
 

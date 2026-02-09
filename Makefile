@@ -1,4 +1,4 @@
-.PHONY: setup dev test lint typecheck build check release
+.PHONY: setup dev test test-e2e lint typecheck build check release
 
 setup:
 	npm install
@@ -8,6 +8,9 @@ dev:
 
 test:
 	npm run test
+
+test-e2e:
+	npm run test:e2e
 
 lint:
 	npm run lint

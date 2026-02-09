@@ -1,6 +1,12 @@
 # CHANGELOG
 
 ## Unreleased
+- Added Playwright browser smoke coverage for token edit/undo/redo/import/export flows.
+- Added `make test-e2e` target for browser smoke verification.
+- CI now runs a Node matrix (`20.19.0`, `22.x`) plus a Playwright smoke job.
+- Refactored token override history state into `src/hooks/useTokenOverrides.ts`.
+- Refactored contrast color parsing/compositing math into `src/utils/contrast.ts` with dedicated unit tests.
+- Vitest config now excludes Playwright specs without overriding default dependency excludes.
 - CodeQL workflow upgraded from `github/codeql-action@v3` to `@v4` (v3 deprecates in Dec 2026).
 - CI now runs on Node.js `20.19.0` to match Vite/Vitest/jsdom engine requirements.
 - Project runtime baseline now documents Node.js `>=20.19` (`.nvmrc`, package engines, docs).
