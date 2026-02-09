@@ -6,6 +6,7 @@
 - Break `src/App.tsx` into smaller components/hooks to reduce maintenance cost.
 
 ## Shipped
+- CodeQL workflow upgraded to `github/codeql-action@v4` ahead of v3 deprecation.
 - Token table now shows edits status (override count + undo/redo depth).
 - Token edit history is now bounded and uses deterministic undo/redo snapshots.
 - CI Node runtime now targets `20.19.0`; project baseline is `>=20.19`.

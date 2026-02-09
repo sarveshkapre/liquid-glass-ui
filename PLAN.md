@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-09: CodeQL workflow upgraded to `github/codeql-action@v4` before v3 deprecation.
 - 2026-02-08: Token table adds a live edits footer (override count + undo/redo depth).
 - 2026-02-08: Token override history is now bounded with deterministic undo/redo snapshots.
 - 2026-02-08: CI and project runtime baseline aligned to Node.js `20.19.0` / `>=20.19`.

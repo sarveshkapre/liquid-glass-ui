@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- CodeQL workflow upgraded from `github/codeql-action@v3` to `@v4` (v3 deprecates in Dec 2026).
 - CI now runs on Node.js `20.19.0` to match Vite/Vitest/jsdom engine requirements.
 - Project runtime baseline now documents Node.js `>=20.19` (`.nvmrc`, package engines, docs).
 - Token table now shows live edits status (override count + undo/redo depth).
