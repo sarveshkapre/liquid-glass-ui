@@ -17,6 +17,14 @@ test('token table edit/import/export smoke path', async ({ page }) => {
     page.getByText(/edits status: 1 overrides \| undo depth 1 \| redo depth 0/i),
   ).toBeVisible()
 
+  await page.locator('details.token-table > summary').click()
+  await page.keyboard.press('Control+Z')
+  await expect(accentCoralRow).toContainText('#ff9f7a')
+
+  await page.locator('details.token-table > summary').click()
+  await page.keyboard.press('Control+Shift+Z')
+  await expect(accentCoralRow).toContainText('#000000')
+
   await page.getByRole('button', { name: /undo last token edit/i }).click()
   await expect(accentCoralRow).toContainText('#ff9f7a')
 
@@ -46,6 +54,39 @@ test('token table edit/import/export smoke path', async ({ page }) => {
   await page.getByRole('button', { name: /apply imported edits/i }).click()
 
   await expect(accentCoralRow).toContainText('#2364ff')
+
+  await page.getByRole('button', { name: /reset local token edits/i }).click()
+  await expect(accentCoralRow).toContainText('#ff9f7a')
+
+  const importedEditsFile = {
+    version: 1,
+    overrides: {
+      'accent.coral': {
+        value: '#00ff9d',
+        description: 'Playwright smoke drag-drop value',
+        usedBy: ['Smoke test'],
+      },
+    },
+  }
+
+  await page.getByRole('button', { name: /import token edits json/i }).click()
+  const importDialog = page.getByRole('dialog', { name: /import token edits/i })
+  await expect(importDialog).toBeVisible()
+
+  const dataTransfer = await page.evaluateHandle(
+    ({ text, name }) => {
+      const dt = new DataTransfer()
+      dt.items.add(new File([text], name, { type: 'application/json' }))
+      return dt
+    },
+    { text: JSON.stringify(importedEditsFile), name: 'edits.json' },
+  )
+
+  await importDialog.dispatchEvent('drop', { dataTransfer })
+  await expect(page.getByText(/ready to import 1 edits/i)).toBeVisible()
+  await page.getByRole('button', { name: /apply imported edits/i }).click()
+
+  await expect(accentCoralRow).toContainText('#00ff9d')
 
   const csvDownloadPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: /download filtered tokens as csv/i }).click()
