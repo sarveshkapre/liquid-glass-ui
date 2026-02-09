@@ -6,6 +6,7 @@ import { compositeOver, contrastRatio, parseColor } from './utils/contrast'
 
 type Theme = 'light' | 'dark'
 type Motion = 'full' | 'reduced'
+type Transparency = 'full' | 'reduced'
 
 type TokenItem = {
   name: string
@@ -62,6 +63,7 @@ const components: ComponentItem[] = [
 const a11yChecklist = [
   'Contrast ratio ≥ 4.5 for text on frosted layers.',
   'Reduced-motion mode swaps lifts for opacity changes.',
+  'Reduced-transparency mode increases opacity and reduces blur.',
   'Keyboard focus uses a high-chroma ring.',
   'Interactive elements are at least 44px tall.',
 ]
@@ -201,9 +203,25 @@ function getInitialMotion(): Motion {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'full'
 }
 
+function getInitialTransparency(): Transparency {
+  if (typeof window === 'undefined') {
+    return 'full'
+  }
+
+  const stored = window.localStorage.getItem('lg-transparency')
+  if (stored === 'full' || stored === 'reduced') {
+    return stored
+  }
+
+  return window.matchMedia('(prefers-reduced-transparency: reduce)').matches
+    ? 'reduced'
+    : 'full'
+}
+
 function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
   const [motion, setMotion] = useState<Motion>(getInitialMotion)
+  const [transparency, setTransparency] = useState<Transparency>(getInitialTransparency)
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<number | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
@@ -238,6 +256,11 @@ function App() {
     document.documentElement.dataset.motion = motion
     window.localStorage.setItem('lg-motion', motion)
   }, [motion])
+
+  useEffect(() => {
+    document.documentElement.dataset.transparency = transparency
+    window.localStorage.setItem('lg-transparency', transparency)
+  }, [transparency])
 
   useEffect(() => {
     return () => {
@@ -291,6 +314,14 @@ function App() {
         ? 'Switch to full motion'
         : 'Switch to reduced motion',
     [motion],
+  )
+
+  const toggleTransparencyLabel = useMemo(
+    () =>
+      transparency === 'reduced'
+        ? 'Switch to full transparency'
+        : 'Switch to reduced transparency',
+    [transparency],
   )
 
   const announce = (message: string) => {
@@ -597,6 +628,17 @@ function App() {
             }
           >
             {motion === 'reduced' ? 'Reduced' : 'Motion'}
+          </button>
+          <button
+            className="theme-toggle"
+            type="button"
+            aria-pressed={transparency === 'reduced'}
+            aria-label={toggleTransparencyLabel}
+            onClick={() =>
+              setTransparency((current) => (current === 'reduced' ? 'full' : 'reduced'))
+            }
+          >
+            {transparency === 'reduced' ? 'Solid' : 'Glass'}
           </button>
         </nav>
       </header>

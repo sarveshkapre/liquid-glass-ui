@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- Reduced-transparency mode (system-aware) increases opacity and reduces blur.
 - Added Playwright browser smoke coverage for token edit/undo/redo/import/export flows.
 - Added `make test-e2e` target for browser smoke verification.
 - CI now runs a Node matrix (`20.19.0`, `22.x`) plus a Playwright smoke job.

@@ -21,6 +21,7 @@
   --glass-bg-soft: rgba(255, 255, 255, 0.12);
   --glass-border: rgba(255, 255, 255, 0.16);
   --glass-highlight: rgba(255, 255, 255, 0.18);
+  --glass-blur: 24px;
   --shadow-soft: 0 18px 45px rgba(4, 14, 23, 0.45);
   --shadow-strong: 0 25px 60px rgba(4, 14, 23, 0.6);
 }
@@ -38,6 +39,21 @@
   --glass-highlight: rgba(255, 255, 255, 0.9);
   --shadow-soft: 0 18px 45px rgba(29, 41, 54, 0.12);
   --shadow-strong: 0 25px 60px rgba(29, 41, 54, 0.18);
+}
+
+[data-transparency='reduced'] {
+  --glass-blur: 8px;
+  --glass-bg: rgba(255, 255, 255, 0.2);
+  --glass-bg-soft: rgba(255, 255, 255, 0.26);
+  --glass-border: rgba(255, 255, 255, 0.28);
+  --glass-highlight: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme='light'][data-transparency='reduced'] {
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-bg-soft: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(29, 41, 54, 0.18);
+  --glass-highlight: rgba(255, 255, 255, 1);
 }
 
 * {

@@ -6,6 +6,7 @@
 - Expand Playwright coverage for drag-and-drop import and keyboard shortcut paths.
 
 ## Shipped
+- Reduced-transparency mode (system-aware) increases opacity and reduces blur.
 - Playwright smoke test now covers token edit, undo/redo, import, and export flows.
 - CI now runs Node matrix checks (`20.19.0`, `22.x`) and a dedicated Playwright UI smoke job.
 - Extracted token override history logic into `src/hooks/useTokenOverrides.ts`.

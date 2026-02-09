@@ -6,6 +6,7 @@ Apple-inspired glassmorphism component showcase with tokens, a11y guidance, and 
 - Token-first glass language (blur, opacity, stroke, depth, accents).
 - Responsive component gallery with live previews.
 - Dark/light mode toggle with persistent preference.
+- Reduced-transparency toggle (system-aware) for accessibility and performance.
 - Accessibility guardrails baked into the UI.
 - Browser smoke coverage for token edit/import/export flows.
 
