@@ -6,18 +6,17 @@
 - Test and build failures
 - Gaps found during codebase exploration
 - GitHub issue list (open issues by `sarveshkapre`/trusted bots: none)
-- GitHub Actions runs #21558224112, #21810261615, #21810261616, #21810261623
+- GitHub Actions runs #21558224112, #21810261615, #21810261616, #21810261623, #21813279443 (ui smoke failure)
 
 ## Candidate Features To Do
-- [ ] P0 (selected): Add reduced-transparency support (system preference + topbar toggle) and map it to CSS variables (blur + opacity) for accessibility and performance.
-- [ ] P1 (selected): Split `src/App.tsx` view sections into smaller components (`TokensSection`, `ComponentsSection`, `GuidelinesSection`) while keeping DOM structure/ARIA stable.
-- [ ] P1 (selected): Extend Playwright coverage for drag-and-drop import and keyboard shortcut undo/redo paths (`Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z`).
-- [ ] P2 (selected): Add focused hook tests for `useTokenOverrides` history limit and stack transitions (redo cleared on new edit).
-- [ ] P2: Expand keyboard demos with explicit table-navigation/editing patterns and reduced-motion variants.
-- [ ] P3: Extract shared clipboard/download helpers into `src/utils` for reuse and easier test coverage.
-- [ ] P3: Add optional high-contrast CSS affordances (`prefers-contrast: more`) for borders/focus rings on glass surfaces.
-- [ ] P3: Add a JSON schema artifact for token-edits import (and validate `version === 1`).
-- [ ] P3: Add `aria-keyshortcuts` hints for undo/redo within the token table surface.
+- [ ] P0 (selected): Fix CI Playwright ui-smoke failure by stabilizing token-table keyboard undo/redo (focus the token-table surface without toggling the `<details>` open state).
+- [ ] P1 (selected): Validate token-edits import JSON `version === 1` and show clear errors; add unit tests for parse/validation.
+- [ ] P1 (selected): Add focused unit tests for `useTokenOverrides` history cap and stack transitions (redo cleared on new edit).
+- [ ] P2 (selected): Add `aria-keyshortcuts` hints for undo/redo within the token-table surface and keep labels consistent for assistive tech.
+- [ ] P2 (selected): Add optional high-contrast CSS affordances (`prefers-contrast: more`) for borders/focus rings on glass surfaces (no visual regressions in default mode).
+- [ ] P3: Expand keyboard demos with explicit table-navigation/editing patterns and reduced-motion variants (per `docs/ROADMAP.md`).
+- [ ] P3: Extract shared download helpers (CSV + edits JSON) into `src/utils` for reuse and easier test coverage.
+- [ ] P3: Add a JSON schema artifact for token-edits import (and keep it versioned).
 
 ## Implemented
 - [x] 2026-02-09: Added Playwright browser smoke test for token edit, undo/redo, import, and export flows.
