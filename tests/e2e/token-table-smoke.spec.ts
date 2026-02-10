@@ -17,11 +17,13 @@ test('token table edit/import/export smoke path', async ({ page }) => {
     page.getByText(/edits status: 1 overrides \| undo depth 1 \| redo depth 0/i),
   ).toBeVisible()
 
-  await page.locator('details.token-table > summary').click()
+  // Focus the token-table surface so the <details onKeyDownCapture> handler receives shortcuts,
+  // without toggling the open/closed state (which would hide the table from the a11y tree).
+  await page.locator('details.token-table > summary').focus()
   await page.keyboard.press('Control+Z')
   await expect(accentCoralRow).toContainText('#ff9f7a')
 
-  await page.locator('details.token-table > summary').click()
+  await page.locator('details.token-table > summary').focus()
   await page.keyboard.press('Control+Shift+Z')
   await expect(accentCoralRow).toContainText('#000000')
 
