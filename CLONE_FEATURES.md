@@ -9,16 +9,19 @@
 - GitHub Actions runs #21558224112, #21810261615, #21810261616, #21810261623, #21813279443 (ui smoke failure)
 
 ## Candidate Features To Do
-- [ ] P0 (selected): Fix CI Playwright ui-smoke failure by stabilizing token-table keyboard undo/redo (focus the token-table surface without toggling the `<details>` open state).
-- [ ] P1 (selected): Validate token-edits import JSON `version === 1` and show clear errors; add unit tests for parse/validation.
-- [ ] P1 (selected): Add focused unit tests for `useTokenOverrides` history cap and stack transitions (redo cleared on new edit).
-- [ ] P2 (selected): Add `aria-keyshortcuts` hints for undo/redo within the token-table surface and keep labels consistent for assistive tech.
-- [ ] P2 (selected): Add optional high-contrast CSS affordances (`prefers-contrast: more`) for borders/focus rings on glass surfaces (no visual regressions in default mode).
-- [ ] P3: Expand keyboard demos with explicit table-navigation/editing patterns and reduced-motion variants (per `docs/ROADMAP.md`).
+- [ ] P2: Expand keyboard demos with explicit table-navigation/editing patterns and reduced-motion variants (per `docs/ROADMAP.md`).
 - [ ] P3: Extract shared download helpers (CSV + edits JSON) into `src/utils` for reuse and easier test coverage.
 - [ ] P3: Add a JSON schema artifact for token-edits import (and keep it versioned).
 
 ## Implemented
+- [x] 2026-02-10: Fixed CI Playwright ui-smoke failure by stabilizing token-table keyboard undo/redo (focus summary without toggling `<details>` open/closed state).
+  Evidence: `tests/e2e/token-table-smoke.spec.ts`, GitHub Actions run `21862290540` (commit `4c09e05`)
+- [x] 2026-02-10: Validated token-edits import JSON `version === 1` and added `aria-keyshortcuts` + a visible shortcuts hint for undo/redo.
+  Evidence: `src/sections/TokensSection.tsx`, `src/App.test.tsx` (commit `dc5f11d`)
+- [x] 2026-02-10: Added `useTokenOverrides` unit coverage for redo-stack clearing and history cap behavior.
+  Evidence: `src/hooks/useTokenOverrides.test.tsx` (commit `5b4d71b`)
+- [x] 2026-02-10: Added `prefers-contrast: more` support for stronger glass borders and focus outlines.
+  Evidence: `src/index.css` (commit `e27bb5c`)
 - [x] 2026-02-09: Added Playwright browser smoke test for token edit, undo/redo, import, and export flows.
   Evidence: `playwright.config.ts`, `tests/e2e/token-table-smoke.spec.ts`, `package.json`, `.gitignore`
 - [x] 2026-02-09: Wired browser smoke coverage into CI and added Node matrix checks (`20.19.0`, `22.x`).
@@ -71,6 +74,23 @@
 - GitHub annotation showed `codeql-action@v3` deprecates in Dec 2026, so proactive workflow upgrades reduce surprise maintenance work.
 - Vitest `exclude` configuration should extend `configDefaults.exclude`, otherwise dependency tests from `node_modules` may run.
 - Maintaining explicit evidence in this file makes automation cycles auditable and easier to continue.
+- Market scan notes (untrusted): major platform guidance encourages respecting reduced transparency and increased contrast user prefs.
+  - Apple Human Interface Guidelines: Reduce Transparency/Increase Contrast accessibility settings.
+    https://developer.apple.com/design/human-interface-guidelines/accessibility
+  - Microsoft Fluent Design: Acrylic material and fallback behavior for accessibility/performance.
+    https://learn.microsoft.com/windows/apps/design/style/acrylic
+  - Material Design: accessibility guidance around contrast and motion reduction.
+    https://m3.material.io/foundations/accessible-design/overview
+
+## Gap Map (2026-02-10)
+- Missing:
+  - Versioned JSON schema artifact for token-edits import/export.
+- Weak:
+  - Keyboard interaction demos beyond token-table shortcuts.
+- Parity:
+  - Token export/import flows (JSON + drag/drop) and accessibility preference support (reduced motion/transparency, prefers-contrast).
+- Differentiator:
+  - Token-table edit history with undo/redo depth surfaced in UI + browser smoke coverage in CI.
 
 ## Notes
 - This file is maintained by the autonomous clone loop.

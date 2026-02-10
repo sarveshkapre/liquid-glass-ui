@@ -1,5 +1,51 @@
 # Project Memory
 
+## Entry 2026-02-10 / Cycle 1
+- Decision: Treat Playwright ui-smoke as a CI gate and fix it immediately when it flakes/fails.
+- Why: The repository’s shipped value is a production-ready “reference UI kit”; if browser smoke is red, the most user-visible flows are untrusted.
+- Evidence:
+  - Fix: focus token-table summary without toggling `<details>` state (`tests/e2e/token-table-smoke.spec.ts`)
+  - Remote: `ci` run `21862290540` (success, commit `4c09e05`)
+- Commit: `a0c5492`
+- Confidence: high
+- Trust label: verified-local-and-ci
+
+## Entry 2026-02-10 / Cycle 1
+- Decision: Validate token-edits import JSON format version and add explicit shortcut discoverability for undo/redo.
+- Why: Schema versioning prevents future-breaking imports; `aria-keyshortcuts` plus visible hints improves keyboard UX and AT support.
+- Evidence:
+  - `src/sections/TokensSection.tsx`
+  - `src/App.test.tsx`
+  - Local: `npm run test` (pass)
+- Commit: `dc5f11d`
+- Confidence: high
+- Trust label: verified-local
+
+## Entry 2026-02-10 / Cycle 1
+- Decision: Add direct unit tests for `useTokenOverrides` history cap and redo-clearing semantics.
+- Why: Undo/redo correctness is easy to regress during refactors; hook-level tests are cheap, deterministic coverage.
+- Evidence:
+  - `src/hooks/useTokenOverrides.test.tsx`
+  - Local: `npm run test` (pass)
+- Commit: `5b4d71b`
+- Confidence: high
+- Trust label: verified-local
+
+## Mistakes And Fixes (2026-02-10)
+- Mistake: Pushed commits before running the full `npm run check` gate; CI caught an ESLint `no-useless-escape` failure.
+- Root cause: Workflow drift (prioritized shipping fixes over running the repo’s full quality gate before every push).
+- Fix: Removed unnecessary regex escapes and re-pushed; CI green.
+- Prevention rule: Run `npm run check` before pushing, or batch small commits locally and only push after the gate is green.
+- Evidence:
+  - Fix commit: `4c09e05`
+  - Remote: `ci` run `21862290540` (success)
+
+## Verification Evidence (2026-02-10)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
+- `npm run dev -- --host 127.0.0.1 --port 4173` + `curl -I http://127.0.0.1:4173` (HTTP 200)
+- Remote: `ci` `21862290540` (success), `gitleaks` `21862290535` (success), `codeql` `21862290531` (success)
+
 ## Entry 2026-02-09 / Cycle 2
 - Decision: Add browser-level smoke coverage with Playwright for token editing flows, and run it in CI after the matrix quality gate.
 - Why: Critical token operations (edit, undo/redo, import, export) were only validated in unit tests and could regress in real browser behavior.
