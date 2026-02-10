@@ -56,6 +56,22 @@
   --glass-highlight: rgba(255, 255, 255, 1);
 }
 
+@media (prefers-contrast: more) {
+  :root {
+    --glass-border: rgba(255, 255, 255, 0.34);
+    --glass-highlight: rgba(255, 255, 255, 0.28);
+  }
+
+  [data-theme='light'] {
+    --glass-border: rgba(29, 41, 54, 0.32);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 4px !important;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
