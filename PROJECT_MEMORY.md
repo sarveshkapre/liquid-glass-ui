@@ -10,6 +10,27 @@
 - Confidence: high
 - Trust label: verified-local-and-ci
 
+## Entry 2026-02-10 / Cycle 2
+- Decision: Extract token CSV + token-edits JSON export/import logic into `src/utils` with direct unit tests.
+- Why: `TokensSection` was accumulating high-risk logic (parsing/serialization/download) that benefits from small pure functions and cheap deterministic tests.
+- Evidence:
+  - `src/utils/tokensCsv.ts`, `src/utils/tokenEdits.ts`, `src/utils/download.ts`
+  - Local: `npm run check` (pass)
+  - Local: `npm run test:e2e` (pass)
+- Commit: `3de8f11`
+- Confidence: high
+- Trust label: verified-local
+
+## Entry 2026-02-10 / Cycle 2
+- Decision: Add a versioned JSON schema artifact for token-edits import/export.
+- Why: A schema makes the edits format explicit, reviewable, and tooling-friendly (validation, future migrations).
+- Evidence:
+  - `public/schemas/liquid-glass-token-edits.v1.schema.json`
+  - Local: `npm run check` (pass)
+- Commit: `5de813b`
+- Confidence: high
+- Trust label: verified-local
+
 ## Entry 2026-02-10 / Cycle 1
 - Decision: Validate token-edits import JSON format version and add explicit shortcut discoverability for undo/redo.
 - Why: Schema versioning prevents future-breaking imports; `aria-keyshortcuts` plus visible hints improves keyboard UX and AT support.
@@ -45,6 +66,11 @@
 - `npm run test:e2e` (pass)
 - `npm run dev -- --host 127.0.0.1 --port 4173` + `curl -I http://127.0.0.1:4173` (HTTP 200)
 - Remote: `ci` `21862290540` (success), `gitleaks` `21862290535` (success), `codeql` `21862290531` (success)
+
+## Verification Evidence (2026-02-10 / Cycle 2)
+- `npm run check` (pass, after commit `3de8f11`)
+- `npm run test:e2e` (pass, after commit `3de8f11`)
+- `npm run check` (pass, after commit `5de813b`)
 
 ## Entry 2026-02-09 / Cycle 2
 - Decision: Add browser-level smoke coverage with Playwright for token editing flows, and run it in CI after the matrix quality gate.

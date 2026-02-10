@@ -9,6 +9,7 @@ Apple-inspired glassmorphism component showcase with tokens, a11y guidance, and 
 - Reduced-transparency toggle (system-aware) for accessibility and performance.
 - Accessibility guardrails baked into the UI.
 - Browser smoke coverage for token edit/import/export flows.
+- Versioned token-edits JSON schema served from `public/schemas/`.
 
 ## Quickstart
 Requires Node.js `>=20.19`.

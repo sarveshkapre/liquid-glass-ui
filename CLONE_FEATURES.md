@@ -10,10 +10,12 @@
 
 ## Candidate Features To Do
 - [ ] P2: Expand keyboard demos with explicit table-navigation/editing patterns and reduced-motion variants (per `docs/ROADMAP.md`).
-- [ ] P3: Extract shared download helpers (CSV + edits JSON) into `src/utils` for reuse and easier test coverage.
-- [ ] P3: Add a JSON schema artifact for token-edits import (and keep it versioned).
 
 ## Implemented
+- [x] 2026-02-10: Extracted token export/import helpers into `src/utils` (CSV builder, versioned edits JSON serializer/parser, safe download helper) with unit coverage.
+  Evidence: `src/utils/tokensCsv.ts`, `src/utils/tokenEdits.ts`, `src/utils/download.ts` (commit `3de8f11`)
+- [x] 2026-02-10: Added a versioned JSON schema artifact for token-edits import/export.
+  Evidence: `public/schemas/liquid-glass-token-edits.v1.schema.json` (commit `5de813b`)
 - [x] 2026-02-10: Fixed CI Playwright ui-smoke failure by stabilizing token-table keyboard undo/redo (focus summary without toggling `<details>` open/closed state).
   Evidence: `tests/e2e/token-table-smoke.spec.ts`, GitHub Actions run `21862290540` (commit `4c09e05`)
 - [x] 2026-02-10: Validated token-edits import JSON `version === 1` and added `aria-keyshortcuts` + a visible shortcuts hint for undo/redo.
