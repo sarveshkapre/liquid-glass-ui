@@ -59,11 +59,12 @@
 @media (prefers-contrast: more) {
   :root {
     --glass-border: rgba(255, 255, 255, 0.34);
-    --glass-highlight: rgba(255, 255, 255, 0.28);
+    --glass-highlight: rgba(255, 255, 255, 0.26);
   }
 
   [data-theme='light'] {
     --glass-border: rgba(29, 41, 54, 0.32);
+    --glass-highlight: rgba(255, 255, 255, 1);
   }
 
   :focus-visible {
