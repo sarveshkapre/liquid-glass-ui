@@ -71,6 +71,7 @@
 - `npm run check` (pass, after commit `3de8f11`)
 - `npm run test:e2e` (pass, after commit `3de8f11`)
 - `npm run check` (pass, after commit `5de813b`)
+- `npm run check` (pass, after commit `0ea88d1`)
 
 ## Entry 2026-02-09 / Cycle 2
 - Decision: Add browser-level smoke coverage with Playwright for token editing flows, and run it in CI after the matrix quality gate.
