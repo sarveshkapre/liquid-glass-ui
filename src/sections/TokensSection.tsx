@@ -2,6 +2,10 @@ import { useMemo, useState } from 'react'
 import { useTokenOverrides } from '../hooks/useTokenOverrides'
 import tokenData from '../tokens.json'
 import { copyToClipboard } from '../utils/clipboard'
+import { tryDownloadTextFile } from '../utils/download'
+import type { ImportEditsResult } from '../utils/tokenEdits'
+import { parseTokenEditsJson, serializeTokenEditsFileV1 } from '../utils/tokenEdits'
+import { buildTokensCsv } from '../utils/tokensCsv'
 
 type TokenItem = {
   name: string
@@ -23,97 +27,6 @@ function toTokenJson(token: TokenItem) {
 function toTokenRowText(token: TokenItem) {
   const usedBy = (token.usedBy ?? []).join('; ')
   return `${token.name}\t${token.value}\t${token.description}\t${usedBy}\n`
-}
-
-type TokenEditsFile = {
-  version?: unknown
-  overrides?: unknown
-}
-
-type ImportEditsResult = {
-  overrides: Record<string, Partial<TokenItem>>
-  ignoredCount: number
-  errors: string[]
-}
-
-function parseTokenEditsJson(
-  jsonText: string,
-  allowedTokenNames: Set<string>,
-): ImportEditsResult {
-  const trimmed = jsonText.trim()
-  if (!trimmed) {
-    return { overrides: {}, ignoredCount: 0, errors: ['Paste edits JSON to import.'] }
-  }
-
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(trimmed)
-  } catch {
-    return { overrides: {}, ignoredCount: 0, errors: ['Invalid JSON.'] }
-  }
-
-  if (!parsed || typeof parsed !== 'object') {
-    return { overrides: {}, ignoredCount: 0, errors: ['Invalid edits JSON.'] }
-  }
-
-  const { overrides, version } = parsed as TokenEditsFile
-
-  if (version === undefined) {
-    return { overrides: {}, ignoredCount: 0, errors: ['Missing "version" (expected 1).'] }
-  }
-  if (typeof version !== 'number' || !Number.isFinite(version)) {
-    return { overrides: {}, ignoredCount: 0, errors: ['Invalid "version" (expected 1).'] }
-  }
-  if (version !== 1) {
-    return {
-      overrides: {},
-      ignoredCount: 0,
-      errors: [`Unsupported edits JSON version: ${version} (expected 1).`],
-    }
-  }
-
-  if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
-    return { overrides: {}, ignoredCount: 0, errors: ['Missing "overrides" object.'] }
-  }
-
-  const nextOverrides: Record<string, Partial<TokenItem>> = {}
-  let ignoredCount = 0
-
-  for (const [name, override] of Object.entries(overrides as Record<string, unknown>)) {
-    if (!allowedTokenNames.has(name)) {
-      ignoredCount += 1
-      continue
-    }
-    if (!override || typeof override !== 'object' || Array.isArray(override)) {
-      ignoredCount += 1
-      continue
-    }
-
-    const candidate = override as Partial<TokenItem>
-    const cleaned: Partial<TokenItem> = {}
-
-    if (typeof candidate.value === 'string') cleaned.value = candidate.value
-    if (typeof candidate.description === 'string') cleaned.description = candidate.description
-    if (
-      Array.isArray(candidate.usedBy) &&
-      candidate.usedBy.every((entry) => typeof entry === 'string' && entry.trim().length > 0)
-    ) {
-      cleaned.usedBy = candidate.usedBy
-    }
-
-    if (Object.keys(cleaned).length > 0) {
-      nextOverrides[name] = cleaned
-    } else {
-      ignoredCount += 1
-    }
-  }
-
-  const errors: string[] = []
-  if (Object.keys(nextOverrides).length === 0) {
-    errors.push('No valid overrides found.')
-  }
-
-  return { overrides: nextOverrides, ignoredCount, errors }
 }
 
 type Props = {
@@ -200,65 +113,39 @@ function TokensSection({ announce }: Props) {
   }, [tokens])
 
   const downloadTokenCsv = async () => {
-    const rows = filteredTokens.map((token) => ({
-      name: token.name,
-      value: token.value,
-      description: token.description,
-      usedBy: (token.usedBy ?? []).join('; '),
-    }))
+    const csv = buildTokensCsv(filteredTokens)
 
-    const escape = (value: string) => `"${value.replaceAll('"', '""')}"`
-    const header = ['name', 'value', 'description', 'usedBy'].join(',')
-    const lines = rows.map((row) =>
-      [row.name, row.value, row.description, row.usedBy].map(escape).join(','),
-    )
-    const csv = `${header}\n${lines.join('\n')}\n`
-
-    try {
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = 'liquid-glass-tokens.csv'
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.setTimeout(() => {
-        URL.revokeObjectURL(url)
-      }, 1000)
+    if (
+      tryDownloadTextFile({
+        filename: 'liquid-glass-tokens.csv',
+        mimeType: 'text/csv;charset=utf-8',
+        text: csv,
+      })
+    ) {
       announce('Downloaded token CSV')
-    } catch {
-      await copyToClipboard(csv)
-      announce('Copied token CSV')
+      return
     }
+
+    await copyToClipboard(csv)
+    announce('Copied token CSV')
   }
 
   const downloadTokenEdits = async () => {
-    const payload = {
-      version: 1,
-      generatedAt: new Date().toISOString(),
-      overrides: tokenOverrides,
-    }
+    const json = serializeTokenEditsFileV1(tokenOverrides)
 
-    const json = `${JSON.stringify(payload, null, 2)}\n`
-
-    try {
-      const blob = new Blob([json], { type: 'application/json;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = 'liquid-glass-token-edits.json'
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.setTimeout(() => {
-        URL.revokeObjectURL(url)
-      }, 1000)
+    if (
+      tryDownloadTextFile({
+        filename: 'liquid-glass-token-edits.json',
+        mimeType: 'application/json;charset=utf-8',
+        text: json,
+      })
+    ) {
       announce('Downloaded token edits JSON')
-    } catch {
-      await copyToClipboard(json)
-      announce('Copied token edits JSON')
+      return
     }
+
+    await copyToClipboard(json)
+    announce('Copied token edits JSON')
   }
 
   const importPreview = useMemo(() => {
