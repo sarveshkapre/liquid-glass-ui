@@ -21,7 +21,7 @@
 - [x] 2026-02-10: Added `useTokenOverrides` unit coverage for redo-stack clearing and history cap behavior.
   Evidence: `src/hooks/useTokenOverrides.test.tsx` (commit `5b4d71b`)
 - [x] 2026-02-10: Added `prefers-contrast: more` support for stronger glass borders and focus outlines.
-  Evidence: `src/index.css` (commit `e27bb5c`)
+  Evidence: `src/index.css` (commits `e27bb5c`, `288c6fd`)
 - [x] 2026-02-09: Added Playwright browser smoke test for token edit, undo/redo, import, and export flows.
   Evidence: `playwright.config.ts`, `tests/e2e/token-table-smoke.spec.ts`, `package.json`, `.gitignore`
 - [x] 2026-02-09: Wired browser smoke coverage into CI and added Node matrix checks (`20.19.0`, `22.x`).
