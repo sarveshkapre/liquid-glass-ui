@@ -346,7 +346,7 @@ describe('App', () => {
     })
 
     expect(apply).toBeDisabled()
-    expect(screen.getByRole('alert')).toHaveTextContent(/missing \"version\"/i)
+    expect(screen.getByRole('alert')).toHaveTextContent(/missing "version"/i)
 
     fireEvent.change(screen.getByRole('textbox', { name: /edits json/i }), {
       target: {
