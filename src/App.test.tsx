@@ -329,6 +329,38 @@ describe('App', () => {
     expect(apply).not.toBeDisabled()
   })
 
+  it('requires version 1 for imported edits JSON', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /import token edits json/i }))
+
+    const apply = screen.getByRole('button', { name: /apply imported edits/i })
+
+    fireEvent.change(screen.getByRole('textbox', { name: /edits json/i }), {
+      target: {
+        value: JSON.stringify({
+          overrides: { 'accent.coral': { value: '#000000' } },
+        }),
+      },
+    })
+
+    expect(apply).toBeDisabled()
+    expect(screen.getByRole('alert')).toHaveTextContent(/missing \"version\"/i)
+
+    fireEvent.change(screen.getByRole('textbox', { name: /edits json/i }), {
+      target: {
+        value: JSON.stringify({
+          version: 2,
+          overrides: { 'accent.coral': { value: '#000000' } },
+        }),
+      },
+    })
+
+    expect(apply).toBeDisabled()
+    expect(screen.getByRole('alert')).toHaveTextContent(/unsupported edits json version/i)
+  })
+
   it('exposes token download links', () => {
     render(<App />)
 

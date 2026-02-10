@@ -56,7 +56,22 @@ function parseTokenEditsJson(
     return { overrides: {}, ignoredCount: 0, errors: ['Invalid edits JSON.'] }
   }
 
-  const { overrides } = parsed as TokenEditsFile
+  const { overrides, version } = parsed as TokenEditsFile
+
+  if (version === undefined) {
+    return { overrides: {}, ignoredCount: 0, errors: ['Missing "version" (expected 1).'] }
+  }
+  if (typeof version !== 'number' || !Number.isFinite(version)) {
+    return { overrides: {}, ignoredCount: 0, errors: ['Invalid "version" (expected 1).'] }
+  }
+  if (version !== 1) {
+    return {
+      overrides: {},
+      ignoredCount: 0,
+      errors: [`Unsupported edits JSON version: ${version} (expected 1).`],
+    }
+  }
+
   if (!overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
     return { overrides: {}, ignoredCount: 0, errors: ['Missing "overrides" object.'] }
   }
@@ -402,7 +417,9 @@ function TokensSection({ announce }: Props) {
           }
         }}
       >
-        <summary>Token table</summary>
+        <summary aria-keyshortcuts="Control+Z Meta+Z Control+Shift+Z Meta+Shift+Z">
+          Token table
+        </summary>
         <div className="token-table-body">
           <div className="token-table-controls">
             <label className="token-table-field">
@@ -482,6 +499,7 @@ function TokensSection({ announce }: Props) {
                   type="button"
                   onClick={handleUndoTokenOverride}
                   aria-label="Undo last token edit"
+                  aria-keyshortcuts="Control+Z Meta+Z"
                 >
                   Undo
                 </button>
@@ -492,6 +510,7 @@ function TokensSection({ announce }: Props) {
                   type="button"
                   onClick={handleRedoTokenOverride}
                   aria-label="Redo last token edit"
+                  aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z"
                 >
                   Redo
                 </button>
@@ -518,7 +537,8 @@ function TokensSection({ announce }: Props) {
           </div>
           <div className="token-table-note-row">
             <div className="token-table-note">
-              Local edits only (not saved, not exported to <code>public/tokens.json</code>).
+              Local edits only (not saved, not exported to <code>public/tokens.json</code>). Shortcuts:
+              Ctrl/Cmd+Z to undo, Ctrl/Cmd+Shift+Z to redo.
             </div>
             <div className="token-table-edits-status" role="status" aria-live="polite">
               Edits status: {tokenOverrideCount} overrides | undo depth{' '}
