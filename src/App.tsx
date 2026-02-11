@@ -240,7 +240,7 @@ function App() {
       <footer className="footer">
         <div>Built as a reference library for design systems. No tracking, no auth.</div>
         <div className="footer-links">
-          <a href="https://github.com" target="_blank" rel="noreferrer">
+          <a href="https://github.com/sarveshkapre/liquid-glass-ui" target="_blank" rel="noreferrer">
             GitHub
           </a>
           <span aria-hidden="true">•</span>

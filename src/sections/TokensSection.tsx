@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTokenOverrides } from '../hooks/useTokenOverrides'
+import { TokenImportDialog } from './TokenImportDialog'
 import tokenData from '../tokens.json'
 import { copyToClipboard } from '../utils/clipboard'
 import { tryDownloadTextFile } from '../utils/download'
@@ -15,6 +16,8 @@ type TokenItem = {
 }
 
 const baseTokens = tokenData as TokenItem[]
+const allowedTokenNames = new Set(baseTokens.map((token) => token.name))
+const tokenShortcutsGuideId = 'token-table-shortcuts-guide'
 
 function toCssVarName(tokenName: string) {
   return `--lg-${tokenName.replaceAll('.', '-')}`
@@ -42,7 +45,7 @@ function TokensSection({ announce }: Props) {
     tokenOverrideUndoStack,
     tokenOverrides,
     undoTokenOverride,
-  } = useTokenOverrides()
+  } = useTokenOverrides({ allowedTokenNames })
 
   const [tokenQuery, setTokenQuery] = useState('')
   const [tokenUsedBy, setTokenUsedBy] = useState('all')
@@ -74,6 +77,29 @@ function TokensSection({ announce }: Props) {
     redoTokenOverride()
     setEditingTokenName(null)
     announce('Redo')
+  }
+
+  const saveTokenEdit = (tokenName: string) => {
+    const usedBy = editUsedBy
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0)
+
+    applyTokenOverrides((current) => ({
+      ...current,
+      [tokenName]: {
+        value: editValue,
+        description: editDescription,
+        usedBy: usedBy.length > 0 ? usedBy : undefined,
+      },
+    }))
+    setEditingTokenName(null)
+    announce(`Saved local edits for ${tokenName}`)
+  }
+
+  const cancelTokenEdit = () => {
+    setEditingTokenName(null)
+    announce('Canceled token edit')
   }
 
   const tokenUsedByOptions = useMemo(() => {
@@ -149,8 +175,7 @@ function TokensSection({ announce }: Props) {
   }
 
   const importPreview = useMemo(() => {
-    const allowed = new Set(baseTokens.map((token) => token.name))
-    return parseTokenEditsJson(importJson, allowed)
+    return parseTokenEditsJson(importJson, allowedTokenNames)
   }, [importJson])
 
   const importTokenEdits = (result: ImportEditsResult) => {
@@ -424,113 +449,44 @@ function TokensSection({ announce }: Props) {
           </div>
           <div className="token-table-note-row">
             <div className="token-table-note">
-              Local edits only (not saved, not exported to <code>public/tokens.json</code>). Shortcuts:
-              Ctrl/Cmd+Z to undo, Ctrl/Cmd+Shift+Z to redo.
+              Local edits stay in this browser (not exported to <code>public/tokens.json</code>).
+              Shortcuts: Ctrl/Cmd+Z undo, Ctrl/Cmd+Shift+Z redo.
             </div>
             <div className="token-table-edits-status" role="status" aria-live="polite">
               Edits status: {tokenOverrideCount} overrides | undo depth{' '}
               {tokenOverrideUndoStack.length} | redo depth {tokenOverrideRedoStack.length}
             </div>
           </div>
+          <details className="token-table-shortcuts" id={tokenShortcutsGuideId}>
+            <summary>Keyboard guide</summary>
+            <ul>
+              <li>Global table shortcuts: Ctrl/Cmd+Z undo, Ctrl/Cmd+Shift+Z redo.</li>
+              <li>While editing value/used-by: Enter saves, Escape cancels.</li>
+              <li>While editing description: Ctrl/Cmd+Enter saves, Escape cancels.</li>
+            </ul>
+          </details>
 
-          {importOpen ? (
-            <div
-              className={`token-import ${isImportDragActive ? 'token-import--active' : ''}`}
-              role="dialog"
-              aria-label="Import token edits"
-              onDragOver={(e) => {
-                e.preventDefault()
-                setIsImportDragActive(true)
-              }}
-              onDragLeave={() => setIsImportDragActive(false)}
-              onDrop={(e) => {
-                e.preventDefault()
-                setIsImportDragActive(false)
-                const [file] = Array.from(e.dataTransfer.files)
-                if (file) {
-                  void loadImportFile(file)
-                }
-              }}
-            >
-              <div className="token-import-header">
-                <div className="token-import-title">Import edits</div>
-                <button
-                  className="token-copy token-copy--sm subtle"
-                  type="button"
-                  onClick={() => setImportOpen(false)}
-                  aria-label="Close import dialog"
-                >
-                  Close
-                </button>
-              </div>
-              <div className="token-import-hint">
-                Drop a <code>.json</code> file here or paste below.
-                <label className="token-import-file">
-                  <span className="sr-only">Choose edits JSON file</span>
-                  <input
-                    type="file"
-                    accept="application/json,.json"
-                    onChange={(e) => {
-                      const [file] = Array.from(e.target.files ?? [])
-                      if (file) {
-                        void loadImportFile(file)
-                      }
-                      e.currentTarget.value = ''
-                    }}
-                  />
-                  Choose file
-                </label>
-              </div>
-              <div className="token-import-format" aria-label="Edits JSON format">
-                Format:{' '}
-                <code>
-                  {'{ version: 1, overrides: { [tokenName]: { value?, description?, usedBy? } } }'}
-                </code>
-              </div>
-              <textarea
-                className="token-table-textarea"
-                value={importJson}
-                onChange={(e) => setImportJson(e.target.value)}
-                placeholder="Paste liquid-glass-token-edits.json contents here"
-                aria-label="Edits JSON"
-              />
-              {importPreview.errors.length > 0 ? (
-                <div className="token-import-errors" role="alert">
-                  {importPreview.errors.map((error) => (
-                    <div key={error}>{error}</div>
-                  ))}
-                </div>
-              ) : (
-                <div className="token-import-summary" role="status" aria-live="polite">
-                  Ready to import {Object.keys(importPreview.overrides).length} edits
-                  {importPreview.ignoredCount > 0 ? ` (ignored ${importPreview.ignoredCount})` : ''}
-                  .
-                </div>
-              )}
-              <div className="token-import-actions">
-                <button
-                  className="token-copy token-copy--sm"
-                  type="button"
-                  onClick={() => importTokenEdits(importPreview)}
-                  aria-label="Apply imported edits"
-                  disabled={importPreview.errors.length > 0}
-                >
-                  Apply
-                </button>
-                <button
-                  className="token-copy token-copy--sm subtle"
-                  type="button"
-                  onClick={() => {
-                    setImportJson('')
-                    setImportOpen(false)
-                  }}
-                  aria-label="Cancel import"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : null}
+          <TokenImportDialog
+            isOpen={importOpen}
+            importJson={importJson}
+            isDragActive={isImportDragActive}
+            importPreview={importPreview}
+            onApply={() => importTokenEdits(importPreview)}
+            onCancel={() => {
+              setImportJson('')
+              setImportOpen(false)
+              setIsImportDragActive(false)
+            }}
+            onClose={() => {
+              setImportOpen(false)
+              setIsImportDragActive(false)
+            }}
+            onDragActiveChange={setIsImportDragActive}
+            onFileSelected={(file) => {
+              void loadImportFile(file)
+            }}
+            onImportJsonChange={setImportJson}
+          />
 
           <div className="token-table-scroll">
             <table aria-label="Token table">
@@ -553,6 +509,17 @@ function TokensSection({ announce }: Props) {
                           className="token-table-input"
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              event.preventDefault()
+                              saveTokenEdit(token.name)
+                            }
+                            if (event.key === 'Escape') {
+                              event.preventDefault()
+                              cancelTokenEdit()
+                            }
+                          }}
+                          aria-describedby={tokenShortcutsGuideId}
                           aria-label={`Edit value for ${token.name}`}
                         />
                       ) : (
@@ -566,6 +533,20 @@ function TokensSection({ announce }: Props) {
                             className="token-table-textarea"
                             value={editDescription}
                             onChange={(e) => setEditDescription(e.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Escape') {
+                                event.preventDefault()
+                                cancelTokenEdit()
+                              }
+                              if (
+                                event.key === 'Enter' &&
+                                (event.ctrlKey || event.metaKey)
+                              ) {
+                                event.preventDefault()
+                                saveTokenEdit(token.name)
+                              }
+                            }}
+                            aria-describedby={tokenShortcutsGuideId}
                             aria-label={`Edit description for ${token.name}`}
                           />
                         </div>
@@ -579,6 +560,17 @@ function TokensSection({ announce }: Props) {
                           className="token-table-input"
                           value={editUsedBy}
                           onChange={(e) => setEditUsedBy(e.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              event.preventDefault()
+                              saveTokenEdit(token.name)
+                            }
+                            if (event.key === 'Escape') {
+                              event.preventDefault()
+                              cancelTokenEdit()
+                            }
+                          }}
+                          aria-describedby={tokenShortcutsGuideId}
                           aria-label={`Edit used by for ${token.name}`}
                           placeholder="Comma-separated"
                         />
@@ -662,22 +654,7 @@ function TokensSection({ announce }: Props) {
                             className="token-copy token-copy--sm"
                             type="button"
                             aria-label={`Save edits for ${token.name}`}
-                            onClick={() => {
-                              const usedBy = editUsedBy
-                                .split(',')
-                                .map((entry) => entry.trim())
-                                .filter((entry) => entry.length > 0)
-                              applyTokenOverrides((current) => ({
-                                ...current,
-                                [token.name]: {
-                                  value: editValue,
-                                  description: editDescription,
-                                  usedBy: usedBy.length > 0 ? usedBy : undefined,
-                                },
-                              }))
-                              setEditingTokenName(null)
-                              announce(`Saved local edits for ${token.name}`)
-                            }}
+                            onClick={() => saveTokenEdit(token.name)}
                           >
                             Save
                           </button>
@@ -685,7 +662,7 @@ function TokensSection({ announce }: Props) {
                             className="token-copy token-copy--sm subtle"
                             type="button"
                             aria-label={`Cancel edits for ${token.name}`}
-                            onClick={() => setEditingTokenName(null)}
+                            onClick={cancelTokenEdit}
                           >
                             Cancel
                           </button>

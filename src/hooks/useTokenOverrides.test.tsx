@@ -95,6 +95,35 @@ function HistoryCapHarness() {
   )
 }
 
+const storageAllowedTokenNames = new Set(['accent.coral'])
+
+function StorageHarness() {
+  const { applyTokenOverrides, tokenOverrides } = useTokenOverrides({
+    storageKey: 'test-token-overrides',
+    allowedTokenNames: storageAllowedTokenNames,
+  })
+
+  return (
+    <div>
+      <div aria-label="accent value">{tokenOverrides['accent.coral']?.value ?? '(unset)'}</div>
+      <button
+        type="button"
+        onClick={() =>
+          applyTokenOverrides((current) => ({
+            ...current,
+            'accent.coral': { value: '#123456' },
+          }))
+        }
+      >
+        apply
+      </button>
+      <button type="button" onClick={() => applyTokenOverrides(() => ({}))}>
+        clear
+      </button>
+    </div>
+  )
+}
+
 describe('useTokenOverrides', () => {
   it('clears redo stack on new edits', () => {
     render(<RedoHarness />)
@@ -139,5 +168,47 @@ describe('useTokenOverrides', () => {
     // With a 100-snapshot cap, after 105 edits we can only undo back to state #5.
     expect(screen.getByLabelText('override count')).toHaveTextContent('5')
   })
-})
 
+  it('hydrates persisted token overrides and filters unknown tokens', () => {
+    window.localStorage.setItem(
+      'test-token-overrides',
+      JSON.stringify({
+        version: 1,
+        overrides: {
+          'accent.coral': { value: '#fedcba' },
+          'unknown.token': { value: '#000000' },
+        },
+      }),
+    )
+
+    render(<StorageHarness />)
+
+    expect(screen.getByLabelText('accent value')).toHaveTextContent('#fedcba')
+  })
+
+  it('persists token overrides to localStorage using versioned payload', () => {
+    render(<StorageHarness />)
+
+    fireEvent.click(screen.getByText('apply'))
+
+    const persistedRaw = window.localStorage.getItem('test-token-overrides')
+    expect(persistedRaw).not.toBeNull()
+
+    const persisted = JSON.parse(String(persistedRaw)) as {
+      version: number
+      overrides: Record<string, { value?: string }>
+    }
+    expect(persisted.version).toBe(1)
+    expect(persisted.overrides['accent.coral']?.value).toBe('#123456')
+  })
+
+  it('removes persisted overrides when edits are cleared', () => {
+    render(<StorageHarness />)
+
+    fireEvent.click(screen.getByText('apply'))
+    expect(window.localStorage.getItem('test-token-overrides')).not.toBeNull()
+
+    fireEvent.click(screen.getByText('clear'))
+    expect(window.localStorage.getItem('test-token-overrides')).toBeNull()
+  })
+})

@@ -9,8 +9,15 @@ test('token table edit/import/export smoke path', async ({ page }) => {
   const accentCoralRow = table.getByRole('row', { name: /accent\.coral/i })
 
   await accentCoralRow.getByRole('button', { name: 'Edit accent.coral (table)' }).click()
-  await page.getByRole('textbox', { name: 'Edit value for accent.coral' }).fill('#000000')
-  await page.getByRole('button', { name: 'Save edits for accent.coral' }).click()
+  const editValueInput = page.getByRole('textbox', { name: 'Edit value for accent.coral' })
+  await editValueInput.fill('#121212')
+  await editValueInput.press('Escape')
+  await expect(accentCoralRow).toContainText('#ff9f7a')
+
+  await accentCoralRow.getByRole('button', { name: 'Edit accent.coral (table)' }).click()
+  const editValueInput2 = page.getByRole('textbox', { name: 'Edit value for accent.coral' })
+  await editValueInput2.fill('#000000')
+  await editValueInput2.press('Enter')
 
   await expect(accentCoralRow).toContainText('#000000')
   await expect(

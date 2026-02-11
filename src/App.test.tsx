@@ -185,6 +185,68 @@ describe('App', () => {
     ).toBeInTheDocument()
   })
 
+  it('supports Escape cancel and Enter save while editing token rows', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+
+    const valueInput = screen.getByRole('textbox', { name: 'Edit value for accent.coral' })
+    await user.clear(valueInput)
+    await user.type(valueInput, '#010101')
+    fireEvent.keyDown(valueInput, { key: 'Escape' })
+
+    expect(within(table).getByText('#ff9f7a')).toBeInTheDocument()
+    expect(
+      screen.getByText(/edits status: 0 overrides \| undo depth 0 \| redo depth 0/i),
+    ).toBeInTheDocument()
+
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+    const valueInput2 = screen.getByRole('textbox', { name: 'Edit value for accent.coral' })
+    await user.clear(valueInput2)
+    await user.type(valueInput2, '#010101')
+    fireEvent.keyDown(valueInput2, { key: 'Enter' })
+
+    expect(within(table).getByText('#010101')).toBeInTheDocument()
+  })
+
+  it('supports Ctrl+Enter save from description textarea', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+
+    const descriptionInput = screen.getByRole('textbox', {
+      name: 'Edit description for accent.coral',
+    })
+    await user.clear(descriptionInput)
+    await user.type(descriptionInput, 'Updated description')
+    fireEvent.keyDown(descriptionInput, { key: 'Enter', ctrlKey: true })
+
+    expect(within(table).getByText('Updated description')).toBeInTheDocument()
+  })
+
+  it('restores saved token overrides after remount', async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(<App />)
+
+    const table = screen.getByRole('table', { name: /token table/i })
+    await user.click(within(table).getByRole('button', { name: 'Edit accent.coral (table)' }))
+    const valueInput = screen.getByRole('textbox', { name: 'Edit value for accent.coral' })
+    await user.clear(valueInput)
+    await user.type(valueInput, '#101010')
+    await user.click(screen.getByRole('button', { name: 'Save edits for accent.coral' }))
+    expect(within(table).getByText('#101010')).toBeInTheDocument()
+
+    unmount()
+    render(<App />)
+
+    const remountedTable = screen.getByRole('table', { name: /token table/i })
+    expect(within(remountedTable).getByText('#101010')).toBeInTheDocument()
+  })
+
   it('supports Ctrl+Z / Ctrl+Shift+Z shortcuts inside the token table', async () => {
     const user = userEvent.setup()
     render(<App />)
@@ -327,6 +389,19 @@ describe('App', () => {
     })
 
     expect(apply).not.toBeDisabled()
+  })
+
+  it('links the import schema from the import dialog', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /import token edits json/i }))
+
+    expect(
+      screen.getByRole('link', {
+        name: /liquid-glass-token-edits\.v1\.schema\.json/i,
+      }),
+    ).toHaveAttribute('href', '/schemas/liquid-glass-token-edits.v1.schema.json')
   })
 
   it('requires version 1 for imported edits JSON', async () => {
