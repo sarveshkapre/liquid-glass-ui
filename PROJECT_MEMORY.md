@@ -1,5 +1,41 @@
 # Project Memory
 
+## Entry 2026-02-11 / Cycle 1
+- Decision: Persist token overrides in browser storage with safe hydration/filtering and cleanup on reset.
+- Why: Local token editing is a core workflow; losing edits on refresh reduced product utility and perceived reliability.
+- Evidence:
+  - `src/hooks/useTokenOverrides.ts`
+  - `src/hooks/useTokenOverrides.test.tsx`
+  - `src/sections/TokensSection.tsx`
+  - `src/App.test.tsx` (`restores saved token overrides after remount`)
+- Commit: `a6ec9c6`
+- Confidence: high
+- Trust label: trusted
+
+## Entry 2026-02-11 / Cycle 1
+- Decision: Expand keyboard editing patterns (Enter/Escape/Ctrl+Enter) and add a visible keyboard guide; extract import dialog into `TokenImportDialog`.
+- Why: Roadmap parity gap was explicit keyboard editing guidance, and `TokensSection` had grown into a maintenance hotspot.
+- Evidence:
+  - `src/sections/TokensSection.tsx`
+  - `src/sections/TokenImportDialog.tsx`
+  - `tests/e2e/token-table-smoke.spec.ts`
+  - `src/App.css`
+- Commit: `a6ec9c6`
+- Confidence: high
+- Trust label: trusted
+
+## Entry 2026-02-11 / Cycle 1
+- Decision: Keep token-system direction aligned with platform/accessibility and standards guidance (bounded market scan).
+- Why: Competitive baseline in this segment emphasizes accessibility settings, keyboard conventions for editable tables, and interoperable token formats.
+- Evidence:
+  - Apple Support accessibility settings (`Reduce transparency`, `Increase contrast`): https://support.apple.com/en-vn/guide/mac-help/unac089/mac
+  - Fluent 2 materials guidance: https://fluent2.microsoft.design/materials/
+  - WAI-ARIA APG grid keyboard conventions: https://www.w3.org/WAI/ARIA/apg/patterns/grid/
+  - Design Tokens Community Group format: https://www.designtokens.org/tr/drafts/format/
+- Commit: `a6ec9c6`
+- Confidence: medium
+- Trust label: untrusted
+
 ## Entry 2026-02-10 / Cycle 1
 - Decision: Treat Playwright ui-smoke as a CI gate and fix it immediately when it flakes/fails.
 - Why: The repository’s shipped value is a production-ready “reference UI kit”; if browser smoke is red, the most user-visible flows are untrusted.
@@ -66,6 +102,16 @@
 - `npm run test:e2e` (pass)
 - `npm run dev -- --host 127.0.0.1 --port 4173` + `curl -I http://127.0.0.1:4173` (HTTP 200)
 - Remote: `ci` `21862290540` (success), `gitleaks` `21862290535` (success), `codeql` `21862290531` (success)
+
+## Verification Evidence (2026-02-11 / Cycle 1)
+- `npm run lint` (pass)
+- `npm run typecheck` (pass)
+- `npm run test` (pass: 44 tests)
+- `npm run build` (pass)
+- `npm run test:e2e` (pass: 1 Playwright spec)
+- `npm run check` (pass: lint + typecheck + test + build + audit)
+- `npm run dev -- --host 127.0.0.1 --port 4173` + `curl -I http://127.0.0.1:4173` (HTTP 200)
+- Remote: `ci` `21899096304` (success), `gitleaks` `21899096298` (success), `codeql` `21899096289` (success) for commit `a6ec9c6`
 
 ## Verification Evidence (2026-02-10 / Cycle 2)
 - `npm run check` (pass, after commit `3de8f11`)

@@ -1,11 +1,14 @@
 # ROADMAP
 
 ## Next
-- Add keyboard interaction demos (focus navigation + reduced-motion variants).
-- Split `src/App.tsx` view sections into smaller components after hook/util extraction.
-- Expand Playwright coverage for drag-and-drop import and keyboard shortcut paths.
+- Split `src/sections/TokensSection.tsx` table rows/actions into smaller components.
+- Add shareable URL state for token-table filters (query/group/used-by).
+- Expand Playwright coverage for Ctrl/Cmd+Enter description-save and reduced-transparency/motion toggles.
 
 ## Shipped
+- Token overrides now persist in browser storage and hydrate safely on reload.
+- Token table adds explicit keyboard edit guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).
+- Token import dialog extracted into a dedicated component with schema link.
 - Reduced-transparency mode (system-aware) increases opacity and reduces blur.
 - Playwright smoke test now covers token edit, undo/redo, import, and export flows.
 - CI now runs Node matrix checks (`20.19.0`, `22.x`) and a dedicated Playwright UI smoke job.

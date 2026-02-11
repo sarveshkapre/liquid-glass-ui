@@ -6,12 +6,36 @@
 - Test and build failures
 - Gaps found during codebase exploration
 - GitHub issue list (open issues by `sarveshkapre`/trusted bots: none)
-- GitHub Actions runs #21558224112, #21810261615, #21810261616, #21810261623, #21813279443 (ui smoke failure)
+- GitHub Actions runs #21899096304, #21899096298, #21899096289 (all green for commit `a6ec9c6`)
+- Bounded market scan (untrusted): Apple HIG accessibility settings, Microsoft Fluent acrylic/material guidance, DTCG format + Style Dictionary workflow
 
 ## Candidate Features To Do
-- [ ] P2: Expand keyboard demos with explicit table-navigation/editing patterns and reduced-motion variants (per `docs/ROADMAP.md`).
+- [ ] [P1] Add Playwright coverage for Ctrl/Cmd+Enter save from description textarea.
+  Score: impact 3, effort 2, strategic fit 4, differentiation 2, risk 2, confidence 4.
+- [ ] [P2] Add a lightweight bundle-size budget check in CI for regression visibility.
+  Score: impact 3, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
+- [ ] [P2] Add token-table URL state (query/group/used-by) for shareable filtered views.
+  Score: impact 3, effort 3, strategic fit 4, differentiation 3, risk 2, confidence 3.
+- [ ] [P2] Split token table rows/actions into focused child components to reduce `TokensSection` complexity.
+  Score: impact 3, effort 3, strategic fit 4, differentiation 1, risk 2, confidence 3.
+- [ ] [P3] Add reduced-motion/reduced-transparency smoke assertions in Playwright.
+  Score: impact 2, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
+- [ ] [P3] Extract token-row action handlers into reusable helpers to cut duplication in table/card views.
+  Score: impact 2, effort 3, strategic fit 4, differentiation 1, risk 2, confidence 3.
+- [ ] [P3] Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
+  Score: impact 2, effort 4, strategic fit 3, differentiation 3, risk 3, confidence 2.
+- [ ] [P3] Add docs page for token-edit file lifecycle and migration strategy (`v1 -> v2`).
+  Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-11: Persisted local token overrides to browser storage with safe hydration/filtering and cleanup on reset.
+  Evidence: `src/hooks/useTokenOverrides.ts`, `src/hooks/useTokenOverrides.test.tsx`, `src/test/setup.ts`, `src/sections/TokensSection.tsx` (commit `a6ec9c6`)
+- [x] 2026-02-11: Expanded keyboard editing UX with explicit save/cancel shortcuts and an in-UI keyboard guide.
+  Evidence: `src/sections/TokensSection.tsx`, `src/App.css`, `src/App.test.tsx`, `tests/e2e/token-table-smoke.spec.ts` (commit `a6ec9c6`)
+- [x] 2026-02-11: Extracted token import dialog into a dedicated component and added a schema link in the import UI.
+  Evidence: `src/sections/TokenImportDialog.tsx`, `src/sections/TokensSection.tsx`, `src/App.test.tsx` (commit `a6ec9c6`)
+- [x] 2026-02-11: Replaced footer GitHub placeholder URL with repository-specific link.
+  Evidence: `src/App.tsx` (commit `a6ec9c6`)
 - [x] 2026-02-10: Extracted token export/import helpers into `src/utils` (CSV builder, versioned edits JSON serializer/parser, safe download helper) with unit coverage.
   Evidence: `src/utils/tokensCsv.ts`, `src/utils/tokenEdits.ts`, `src/utils/download.ts` (commit `3de8f11`)
 - [x] 2026-02-10: Added a versioned JSON schema artifact for token-edits import/export.
@@ -77,22 +101,26 @@
 - Vitest `exclude` configuration should extend `configDefaults.exclude`, otherwise dependency tests from `node_modules` may run.
 - Maintaining explicit evidence in this file makes automation cycles auditable and easier to continue.
 - Market scan notes (untrusted): major platform guidance encourages respecting reduced transparency and increased contrast user prefs.
-  - Apple Human Interface Guidelines: Reduce Transparency/Increase Contrast accessibility settings.
-    https://developer.apple.com/design/human-interface-guidelines/accessibility
-  - Microsoft Fluent Design: Acrylic material and fallback behavior for accessibility/performance.
-    https://learn.microsoft.com/windows/apps/design/style/acrylic
-  - Material Design: accessibility guidance around contrast and motion reduction.
-    https://m3.material.io/foundations/accessible-design/overview
+  - Apple Support: OS-level Reduce Transparency and Increase Contrast settings influence app UI expectations.
+    https://support.apple.com/en-vn/guide/mac-help/unac089/mac
+  - Microsoft Fluent 2 materials guidance: layered materials should preserve clarity and hierarchy.
+    https://fluent2.microsoft.design/materials/
+  - WAI-ARIA APG grid patterns: editable data grids should provide explicit keyboard conventions.
+    https://www.w3.org/WAI/ARIA/apg/patterns/grid/
+  - Design Tokens Community Group format: interoperable token formats are becoming baseline expectations.
+    https://www.designtokens.org/tr/drafts/format/
+  - Style Dictionary docs: multi-platform token pipelines are table-stakes in token systems.
+    https://styledictionary.com/getting-started/installation/
 
-## Gap Map (2026-02-10)
+## Gap Map (2026-02-11)
 - Missing:
-  - Versioned JSON schema artifact for token-edits import/export.
+  - Shareable URL state for token table filters (query/group/used-by).
 - Weak:
-  - Keyboard interaction demos beyond token-table shortcuts.
+  - `TokensSection` still centralizes table row rendering and action wiring in one large file.
 - Parity:
-  - Token export/import flows (JSON + drag/drop) and accessibility preference support (reduced motion/transparency, prefers-contrast).
+- Token export/import flows (JSON + drag/drop + schema link), keyboard edit shortcuts, and accessibility preference support (reduced motion/transparency, prefers-contrast).
 - Differentiator:
-  - Token-table edit history with undo/redo depth surfaced in UI + browser smoke coverage in CI.
+- Token-table edit history with undo/redo depth surfaced in UI + persisted local overrides + browser smoke coverage in CI.
 
 ## Notes
 - This file is maintained by the autonomous clone loop.

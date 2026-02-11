@@ -1,6 +1,10 @@
 # CHANGELOG
 
 ## Unreleased
+- Token overrides now persist in browser storage and hydrate safely on reload.
+- Token table editing adds explicit keyboard guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).
+- Token import dialog extracted into `TokenImportDialog` with a schema link to `public/schemas/liquid-glass-token-edits.v1.schema.json`.
+- Footer GitHub link now points to the repository URL.
 - Reduced-transparency mode (system-aware) increases opacity and reduces blur.
 - Added Playwright browser smoke coverage for token edit/undo/redo/import/export flows.
 - Added `make test-e2e` target for browser smoke verification.

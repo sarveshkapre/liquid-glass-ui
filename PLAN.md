@@ -21,6 +21,10 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-11: Token overrides now persist in browser storage and hydrate safely on reload.
+- 2026-02-11: Token table editing adds keyboard guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).
+- 2026-02-11: Token import dialog was extracted into `TokenImportDialog` with a schema link.
+- 2026-02-11: Footer GitHub link now points to the repository URL.
 - 2026-02-09: CodeQL workflow upgraded to `github/codeql-action@v4` before v3 deprecation.
 - 2026-02-08: Token table adds a live edits footer (override count + undo/redo depth).
 - 2026-02-08: Token override history is now bounded with deterministic undo/redo snapshots.
@@ -47,4 +51,6 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add a Playwright smoke test for token table edit/import/export flows.
+- Split `src/sections/TokensSection.tsx` table rows/actions into smaller components.
+- Add shareable URL state for token-table filters (query/group/used-by).
+- Expand Playwright coverage for Ctrl/Cmd+Enter description-save and reduced-transparency/motion toggles.
