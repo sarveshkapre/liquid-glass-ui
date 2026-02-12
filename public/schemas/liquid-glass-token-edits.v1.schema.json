@@ -16,6 +16,10 @@
           "usedBy": {
             "type": "array",
             "items": { "type": "string", "pattern": "\\\\S" }
+          },
+          "$extensions": {
+            "type": "object",
+            "additionalProperties": true
           }
         },
         "additionalProperties": false,
@@ -26,4 +30,3 @@
   "required": ["version", "overrides"],
   "additionalProperties": true
 }
-

@@ -14,6 +14,7 @@ Apple-inspired glassmorphism component showcase with tokens, a11y guidance, and 
 - Local token overrides persist in browser storage (resettable in-app).
 - Token table keyboard guide with save/cancel shortcuts for inline edits.
 - Token table filters can be shared via URL query state.
+- Token-edits parser/persistence supports optional `$extensions` metadata fields.
 
 ## Quickstart
 Requires Node.js `>=20.19`.

@@ -112,12 +112,33 @@
   - `CLONE_FEATURES.md`
   - `docs/ROADMAP.md`
   - `PLAN.md`
-- Commit: pending
+- Commit: `b7fe48a`
 - Confidence: high
 - Trust label: verified-local
 
 ## Verification Evidence (2026-02-12 / Cycle 7)
 - `npm run check` (pass)
+
+## Entry 2026-02-12 / Cycle 8
+- Decision: Support optional `$extensions` metadata in token-edits import/persistence paths.
+- Why: DTCG-aligned metadata fields improve compatibility with token pipelines that attach alias/context information.
+- Evidence:
+  - `src/utils/tokenEdits.ts`
+  - `src/hooks/useTokenOverrides.ts`
+  - `public/schemas/liquid-glass-token-edits.v1.schema.json`
+  - `src/utils/tokenEdits.test.ts`
+  - `src/hooks/useTokenOverrides.test.tsx`
+  - `docs/TOKEN_EDITS.md`
+  - `CLONE_FEATURES.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 8)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
 
 ## Entry 2026-02-11 / Cycle 1
 - Decision: Persist token overrides in browser storage with safe hydration/filtering and cleanup on reset.

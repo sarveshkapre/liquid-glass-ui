@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- Added optional `$extensions` metadata support in token-edits import/export schema and persistence sanitization.
 - Added `docs/TOKEN_EDITS.md` with token-edit lifecycle and planned `v1 -> v2` migration strategy.
 - Extracted token copy/edit action formatting into shared helpers with unit coverage.
 - Expanded Playwright smoke coverage with reduced-motion and reduced-transparency toggle assertions.

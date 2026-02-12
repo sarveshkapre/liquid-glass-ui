@@ -2,6 +2,7 @@ type TokenEditsOverride = {
   value?: string
   description?: string
   usedBy?: string[]
+  $extensions?: Record<string, unknown>
 }
 
 type TokenEditsFile = {
@@ -92,6 +93,13 @@ function parseTokenEditsJson(
     ) {
       cleaned.usedBy = candidate.usedBy
     }
+    if (
+      candidate.$extensions &&
+      typeof candidate.$extensions === 'object' &&
+      !Array.isArray(candidate.$extensions)
+    ) {
+      cleaned.$extensions = candidate.$extensions
+    }
 
     if (Object.keys(cleaned).length > 0) {
       nextOverrides[name] = cleaned
@@ -110,4 +118,3 @@ function parseTokenEditsJson(
 
 export type { ImportEditsResult, TokenEditsOverride }
 export { parseTokenEditsJson, serializeTokenEditsFileV1 }
-

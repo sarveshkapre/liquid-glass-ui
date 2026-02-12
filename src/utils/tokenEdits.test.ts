@@ -61,8 +61,16 @@ describe('tokenEdits', () => {
       JSON.stringify({
         version: 1,
         overrides: {
-          'accent.coral': { value: '#000000', usedBy: ['OK', '  '] },
-          'accent.aqua': { description: 'Hi', usedBy: ['Focus ring'] },
+          'accent.coral': {
+            value: '#000000',
+            usedBy: ['OK', '  '],
+            $extensions: { dtcg: { aliases: ['accent.primary'] } },
+          },
+          'accent.aqua': {
+            description: 'Hi',
+            usedBy: ['Focus ring'],
+            $extensions: ['invalid'],
+          },
           'unknown.token': { value: '#fff' },
           'accent.coral.bad': 'nope',
         },
@@ -72,7 +80,10 @@ describe('tokenEdits', () => {
 
     expect(result.errors).toEqual([])
     expect(result.overrides).toEqual({
-      'accent.coral': { value: '#000000' },
+      'accent.coral': {
+        value: '#000000',
+        $extensions: { dtcg: { aliases: ['accent.primary'] } },
+      },
       'accent.aqua': { description: 'Hi', usedBy: ['Focus ring'] },
     })
     expect(result.ignoredCount).toBe(2)
@@ -89,4 +100,3 @@ describe('tokenEdits', () => {
     expect(result.ignoredCount).toBe(1)
   })
 })
-

@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-12: Added optional `$extensions` metadata support in token-edits parsing/persistence for broader DTCG compatibility.
 - 2026-02-12: Added token-edit lifecycle and `v1 -> v2` migration strategy docs (`docs/TOKEN_EDITS.md`).
 - 2026-02-12: Extracted token copy/edit action formatting into shared helpers (`src/utils/tokenActions.ts`) with unit tests.
 - 2026-02-12: Expanded Playwright smoke coverage to assert reduced-motion and reduced-transparency toggles.
@@ -58,4 +59,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
+- Identify the next highest-impact product/quality feature after current backlog completion.

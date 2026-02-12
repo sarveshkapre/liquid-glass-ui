@@ -8,6 +8,9 @@ This document describes how local token edits move through the app today (`v1`) 
 - Required root fields:
   - `version` (must be `1`)
   - `overrides` (map of token names to override values)
+- Optional override fields:
+  - `value`, `description`, `usedBy`
+  - `$extensions` (object for metadata such as alias/context hints)
 
 Minimal example:
 
@@ -18,7 +21,12 @@ Minimal example:
     "accent.coral": {
       "value": "#2364ff",
       "description": "Optional override description",
-      "usedBy": ["Optional", "labels"]
+      "usedBy": ["Optional", "labels"],
+      "$extensions": {
+        "dtcg": {
+          "alias": "accent.primary"
+        }
+      }
     }
   }
 }

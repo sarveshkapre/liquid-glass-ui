@@ -102,10 +102,14 @@ function StorageHarness() {
     storageKey: 'test-token-overrides',
     allowedTokenNames: storageAllowedTokenNames,
   })
+  const accentExtensions = tokenOverrides['accent.coral']?.$extensions as
+    | { alias?: string }
+    | undefined
 
   return (
     <div>
       <div aria-label="accent value">{tokenOverrides['accent.coral']?.value ?? '(unset)'}</div>
+      <div aria-label="accent alias">{accentExtensions?.alias ?? '(none)'}</div>
       <button
         type="button"
         onClick={() =>
@@ -116,6 +120,20 @@ function StorageHarness() {
         }
       >
         apply
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          applyTokenOverrides((current) => ({
+            ...current,
+            'accent.coral': {
+              value: '#123456',
+              $extensions: { alias: 'accent.primary' },
+            },
+          }))
+        }
+      >
+        apply-ext
       </button>
       <button type="button" onClick={() => applyTokenOverrides(() => ({}))}>
         clear
@@ -175,7 +193,7 @@ describe('useTokenOverrides', () => {
       JSON.stringify({
         version: 1,
         overrides: {
-          'accent.coral': { value: '#fedcba' },
+          'accent.coral': { value: '#fedcba', $extensions: { alias: 'accent.primary' } },
           'unknown.token': { value: '#000000' },
         },
       }),
@@ -184,22 +202,24 @@ describe('useTokenOverrides', () => {
     render(<StorageHarness />)
 
     expect(screen.getByLabelText('accent value')).toHaveTextContent('#fedcba')
+    expect(screen.getByLabelText('accent alias')).toHaveTextContent('accent.primary')
   })
 
   it('persists token overrides to localStorage using versioned payload', () => {
     render(<StorageHarness />)
 
-    fireEvent.click(screen.getByText('apply'))
+    fireEvent.click(screen.getByText('apply-ext'))
 
     const persistedRaw = window.localStorage.getItem('test-token-overrides')
     expect(persistedRaw).not.toBeNull()
 
     const persisted = JSON.parse(String(persistedRaw)) as {
       version: number
-      overrides: Record<string, { value?: string }>
+      overrides: Record<string, { value?: string; $extensions?: { alias?: string } }>
     }
     expect(persisted.version).toBe(1)
     expect(persisted.overrides['accent.coral']?.value).toBe('#123456')
+    expect(persisted.overrides['accent.coral']?.$extensions?.alias).toBe('accent.primary')
   })
 
   it('removes persisted overrides when edits are cleared', () => {

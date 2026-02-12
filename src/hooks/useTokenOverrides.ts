@@ -4,6 +4,7 @@ type TokenOverride = {
   value?: string
   description?: string
   usedBy?: string[]
+  $extensions?: Record<string, unknown>
 }
 
 type TokenOverrides = Record<string, TokenOverride>
@@ -66,6 +67,13 @@ function sanitizeTokenOverrides(
       if (usedBy.length > 0) {
         cleaned.usedBy = Array.from(new Set(usedBy))
       }
+    }
+    if (
+      raw.$extensions &&
+      typeof raw.$extensions === 'object' &&
+      !Array.isArray(raw.$extensions)
+    ) {
+      cleaned.$extensions = raw.$extensions
     }
 
     if (Object.keys(cleaned).length > 0) {

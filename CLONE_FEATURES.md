@@ -22,12 +22,14 @@
   Score: impact 2, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
 - [x] [P3] Extract token-row action handlers into reusable helpers to cut duplication in table/card views.
   Score: impact 2, effort 3, strategic fit 4, differentiation 1, risk 2, confidence 3.
-- [ ] [P3] Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
+- [x] [P3] Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
   Score: impact 2, effort 4, strategic fit 3, differentiation 3, risk 3, confidence 2.
 - [x] [P3] Add docs page for token-edit file lifecycle and migration strategy (`v1 -> v2`).
   Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-12: Added optional `$extensions` metadata support in token-edits parsing/persistence for broader DTCG compatibility.
+  Evidence: `src/utils/tokenEdits.ts`, `src/hooks/useTokenOverrides.ts`, `public/schemas/liquid-glass-token-edits.v1.schema.json`
 - [x] 2026-02-12: Added token-edit lifecycle and `v1 -> v2` migration strategy documentation.
   Evidence: `docs/TOKEN_EDITS.md`, `README.md`
 - [x] 2026-02-12: Extracted token copy/edit action formatting into reusable token-action helpers.
