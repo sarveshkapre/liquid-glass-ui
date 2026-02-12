@@ -54,3 +54,4 @@ docker run --rm -p 8080:80 liquid-glass-ui
 
 ## Docs
 All project docs live in `docs/`.
+- Token-edit lifecycle and migration guide: `docs/TOKEN_EDITS.md`.

@@ -2,9 +2,9 @@
 
 ## Next
 - Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
-- Add docs for token-edit file lifecycle and migration strategy (`v1 -> v2`).
 
 ## Shipped
+- Added token-edit lifecycle and `v1 -> v2` migration strategy documentation (`docs/TOKEN_EDITS.md`).
 - Token copy/edit action formatting now uses shared helpers with unit coverage.
 - Playwright smoke now asserts reduced-motion and reduced-transparency toggles.
 - Split token-table row/actions into a dedicated `TokenTableRow` component.

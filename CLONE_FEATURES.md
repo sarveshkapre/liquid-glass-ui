@@ -24,10 +24,12 @@
   Score: impact 2, effort 3, strategic fit 4, differentiation 1, risk 2, confidence 3.
 - [ ] [P3] Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
   Score: impact 2, effort 4, strategic fit 3, differentiation 3, risk 3, confidence 2.
-- [ ] [P3] Add docs page for token-edit file lifecycle and migration strategy (`v1 -> v2`).
+- [x] [P3] Add docs page for token-edit file lifecycle and migration strategy (`v1 -> v2`).
   Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-12: Added token-edit lifecycle and `v1 -> v2` migration strategy documentation.
+  Evidence: `docs/TOKEN_EDITS.md`, `README.md`
 - [x] 2026-02-12: Extracted token copy/edit action formatting into reusable token-action helpers.
   Evidence: `src/utils/tokenActions.ts`, `src/sections/TokensSection.tsx`, `src/utils/tokenActions.test.ts`
 - [x] 2026-02-12: Added Playwright smoke assertions for reduced-motion and reduced-transparency toggles.

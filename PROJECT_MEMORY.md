@@ -95,13 +95,29 @@
   - `CLONE_FEATURES.md`
   - `docs/ROADMAP.md`
   - `PLAN.md`
-- Commit: pending
+- Commit: `ed90a76`
 - Confidence: high
 - Trust label: verified-local
 
 ## Verification Evidence (2026-02-12 / Cycle 6)
 - `npm run check` (pass)
 - `npm run test:e2e` (pass)
+
+## Entry 2026-02-12 / Cycle 7
+- Decision: Add a dedicated docs page for token-edit lifecycle and `v1 -> v2` migration strategy.
+- Why: The token-edits format is versioned and user-facing; documenting lifecycle + migration reduces future schema-change risk.
+- Evidence:
+  - `docs/TOKEN_EDITS.md`
+  - `README.md`
+  - `CLONE_FEATURES.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 7)
+- `npm run check` (pass)
 
 ## Entry 2026-02-11 / Cycle 1
 - Decision: Persist token overrides in browser storage with safe hydration/filtering and cleanup on reset.

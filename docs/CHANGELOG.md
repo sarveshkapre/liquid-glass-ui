@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- Added `docs/TOKEN_EDITS.md` with token-edit lifecycle and planned `v1 -> v2` migration strategy.
 - Extracted token copy/edit action formatting into shared helpers with unit coverage.
 - Expanded Playwright smoke coverage with reduced-motion and reduced-transparency toggle assertions.
 - Split token-table row/actions markup into a dedicated `TokenTableRow` component.
