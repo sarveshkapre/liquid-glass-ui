@@ -117,6 +117,52 @@ describe('App', () => {
     expect(within(table).getByText('accent.coral')).toBeInTheDocument()
   })
 
+  it('hydrates token table filters from URL query params', () => {
+    window.history.replaceState(
+      {},
+      '',
+      '/?tokenQuery=accent&tokenGroup=accent&tokenUsedBy=Buttons',
+    )
+
+    render(<App />)
+
+    expect(screen.getByRole('searchbox', { name: /search tokens/i })).toHaveValue('accent')
+    expect(screen.getByRole('combobox', { name: /filter tokens by group/i })).toHaveValue(
+      'accent',
+    )
+    expect(screen.getByRole('combobox', { name: /filter tokens by usage/i })).toHaveValue(
+      'Buttons',
+    )
+    expect(screen.getByText('Showing 1 of 6')).toBeInTheDocument()
+  })
+
+  it('writes token table filters to URL query params', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const search = screen.getByRole('searchbox', { name: /search tokens/i })
+    const group = screen.getByRole('combobox', { name: /filter tokens by group/i })
+    const usedBy = screen.getByRole('combobox', { name: /filter tokens by usage/i })
+
+    await user.type(search, 'accent')
+    await user.selectOptions(group, 'accent')
+    await user.selectOptions(usedBy, 'Buttons')
+
+    const params = new URLSearchParams(window.location.search)
+    expect(params.get('tokenQuery')).toBe('accent')
+    expect(params.get('tokenGroup')).toBe('accent')
+    expect(params.get('tokenUsedBy')).toBe('Buttons')
+
+    await user.clear(search)
+    await user.selectOptions(group, 'all')
+    await user.selectOptions(usedBy, 'all')
+
+    const cleared = new URLSearchParams(window.location.search)
+    expect(cleared.get('tokenQuery')).toBeNull()
+    expect(cleared.get('tokenGroup')).toBeNull()
+    expect(cleared.get('tokenUsedBy')).toBeNull()
+  })
+
   it('exports the filtered token table as CSV', async () => {
     const user = userEvent.setup()
 

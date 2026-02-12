@@ -26,13 +26,31 @@
   - `Makefile`
   - `README.md`
   - `docs/PROJECT.md`
-- Commit: pending
+- Commit: `51eab7f`
 - Confidence: high
 - Trust label: verified-local
 
 ## Verification Evidence (2026-02-12 / Cycle 2)
 - `npm run check` (pass)
 - `npm run size:check` (pass)
+
+## Entry 2026-02-12 / Cycle 3
+- Decision: Add URL-synced token-table filters for query, group, and used-by selections.
+- Why: Shareable filtered views improve collaboration and reproducibility when discussing specific token subsets.
+- Evidence:
+  - `src/sections/TokensSection.tsx`
+  - `src/App.test.tsx`
+  - `src/test/setup.ts`
+  - `CLONE_FEATURES.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 3)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
 
 ## Entry 2026-02-11 / Cycle 1
 - Decision: Persist token overrides in browser storage with safe hydration/filtering and cleanup on reset.

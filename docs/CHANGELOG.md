@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- Token table filters now sync with URL query params (`tokenQuery`, `tokenGroup`, `tokenUsedBy`) for shareable views.
 - Added `npm run size:check` bundle-size budget checks for built JS/CSS assets and wired them into CI.
 - Token overrides now persist in browser storage and hydrate safely on reload.
 - Token table editing adds explicit keyboard guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).

@@ -13,6 +13,7 @@ Apple-inspired glassmorphism component showcase with tokens, a11y guidance, and 
 - Versioned token-edits JSON schema served from `public/schemas/`.
 - Local token overrides persist in browser storage (resettable in-app).
 - Token table keyboard guide with save/cancel shortcuts for inline edits.
+- Token table filters can be shared via URL query state.
 
 ## Quickstart
 Requires Node.js `>=20.19`.

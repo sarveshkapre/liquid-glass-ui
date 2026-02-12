@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTokenOverrides } from '../hooks/useTokenOverrides'
 import { TokenImportDialog } from './TokenImportDialog'
 import tokenData from '../tokens.json'
@@ -18,6 +18,9 @@ type TokenItem = {
 const baseTokens = tokenData as TokenItem[]
 const allowedTokenNames = new Set(baseTokens.map((token) => token.name))
 const tokenShortcutsGuideId = 'token-table-shortcuts-guide'
+const tokenQueryParamKey = 'tokenQuery'
+const tokenGroupParamKey = 'tokenGroup'
+const tokenUsedByParamKey = 'tokenUsedBy'
 
 function toCssVarName(tokenName: string) {
   return `--lg-${tokenName.replaceAll('.', '-')}`
@@ -30,6 +33,54 @@ function toTokenJson(token: TokenItem) {
 function toTokenRowText(token: TokenItem) {
   const usedBy = (token.usedBy ?? []).join('; ')
   return `${token.name}\t${token.value}\t${token.description}\t${usedBy}\n`
+}
+
+function readTokenTableFiltersFromUrl() {
+  if (typeof window === 'undefined') {
+    return { tokenQuery: '', tokenGroup: 'all', tokenUsedBy: 'all' }
+  }
+
+  const params = new URLSearchParams(window.location.search)
+  return {
+    tokenQuery: params.get(tokenQueryParamKey) ?? '',
+    tokenGroup: params.get(tokenGroupParamKey) ?? 'all',
+    tokenUsedBy: params.get(tokenUsedByParamKey) ?? 'all',
+  }
+}
+
+function writeTokenTableFiltersToUrl(filters: {
+  tokenQuery: string
+  tokenGroup: string
+  tokenUsedBy: string
+}) {
+  if (typeof window === 'undefined') return
+
+  const url = new URL(window.location.href)
+
+  if (filters.tokenQuery) {
+    url.searchParams.set(tokenQueryParamKey, filters.tokenQuery)
+  } else {
+    url.searchParams.delete(tokenQueryParamKey)
+  }
+
+  if (filters.tokenGroup !== 'all') {
+    url.searchParams.set(tokenGroupParamKey, filters.tokenGroup)
+  } else {
+    url.searchParams.delete(tokenGroupParamKey)
+  }
+
+  if (filters.tokenUsedBy !== 'all') {
+    url.searchParams.set(tokenUsedByParamKey, filters.tokenUsedBy)
+  } else {
+    url.searchParams.delete(tokenUsedByParamKey)
+  }
+
+  const nextSearch = url.searchParams.toString()
+  const nextPath = `${url.pathname}${nextSearch ? `?${nextSearch}` : ''}${url.hash}`
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`
+  if (nextPath !== currentPath) {
+    window.history.replaceState(window.history.state, '', nextPath)
+  }
 }
 
 type Props = {
@@ -47,9 +98,10 @@ function TokensSection({ announce }: Props) {
     undoTokenOverride,
   } = useTokenOverrides({ allowedTokenNames })
 
-  const [tokenQuery, setTokenQuery] = useState('')
-  const [tokenUsedBy, setTokenUsedBy] = useState('all')
-  const [tokenGroup, setTokenGroup] = useState('all')
+  const initialTokenFilters = useMemo(() => readTokenTableFiltersFromUrl(), [])
+  const [tokenQuery, setTokenQuery] = useState(initialTokenFilters.tokenQuery)
+  const [tokenUsedBy, setTokenUsedBy] = useState(initialTokenFilters.tokenUsedBy)
+  const [tokenGroup, setTokenGroup] = useState(initialTokenFilters.tokenGroup)
   const [editingTokenName, setEditingTokenName] = useState<string | null>(null)
   const [editValue, setEditValue] = useState('')
   const [editDescription, setEditDescription] = useState('')
@@ -102,18 +154,38 @@ function TokensSection({ announce }: Props) {
     announce('Canceled token edit')
   }
 
+  const tokenGroupOptions = useMemo(() => {
+    const groups = tokens
+      .map((token) => token.name.split('.')[0] ?? '')
+      .filter((group) => group.length > 0)
+    return Array.from(new Set(groups)).sort((a, b) => a.localeCompare(b))
+  }, [tokens])
+
   const tokenUsedByOptions = useMemo(() => {
     const entries = tokens.flatMap((token) => token.usedBy ?? [])
     return Array.from(new Set(entries)).sort((a, b) => a.localeCompare(b))
   }, [tokens])
 
+  const resolvedTokenGroup =
+    tokenGroup === 'all' || tokenGroupOptions.includes(tokenGroup) ? tokenGroup : 'all'
+  const resolvedTokenUsedBy =
+    tokenUsedBy === 'all' || tokenUsedByOptions.includes(tokenUsedBy) ? tokenUsedBy : 'all'
+
+  useEffect(() => {
+    writeTokenTableFiltersToUrl({
+      tokenQuery,
+      tokenGroup: resolvedTokenGroup,
+      tokenUsedBy: resolvedTokenUsedBy,
+    })
+  }, [resolvedTokenGroup, resolvedTokenUsedBy, tokenQuery])
+
   const filteredTokens = useMemo(() => {
     const normalizedQuery = tokenQuery.trim().toLowerCase()
     return tokens.filter((token) => {
       const group = token.name.split('.')[0] ?? ''
-      const matchesGroup = tokenGroup === 'all' || group === tokenGroup
+      const matchesGroup = resolvedTokenGroup === 'all' || group === resolvedTokenGroup
       const matchesUsedBy =
-        tokenUsedBy === 'all' || (token.usedBy ?? []).includes(tokenUsedBy)
+        resolvedTokenUsedBy === 'all' || (token.usedBy ?? []).includes(resolvedTokenUsedBy)
 
       if (!matchesGroup || !matchesUsedBy) return false
       if (!normalizedQuery) return true
@@ -129,14 +201,7 @@ function TokensSection({ announce }: Props) {
 
       return haystack.includes(normalizedQuery)
     })
-  }, [tokenGroup, tokenQuery, tokenUsedBy, tokens])
-
-  const tokenGroupOptions = useMemo(() => {
-    const groups = tokens
-      .map((token) => token.name.split('.')[0] ?? '')
-      .filter((group) => group.length > 0)
-    return Array.from(new Set(groups)).sort((a, b) => a.localeCompare(b))
-  }, [tokens])
+  }, [resolvedTokenGroup, resolvedTokenUsedBy, tokenQuery, tokens])
 
   const downloadTokenCsv = async () => {
     const csv = buildTokensCsv(filteredTokens)
@@ -347,7 +412,7 @@ function TokensSection({ announce }: Props) {
             <label className="token-table-field">
               <span>Group</span>
               <select
-                value={tokenGroup}
+                value={resolvedTokenGroup}
                 onChange={(e) => setTokenGroup(e.target.value)}
                 aria-label="Filter tokens by group"
               >
@@ -362,7 +427,7 @@ function TokensSection({ announce }: Props) {
             <label className="token-table-field">
               <span>Used by</span>
               <select
-                value={tokenUsedBy}
+                value={resolvedTokenUsedBy}
                 onChange={(e) => setTokenUsedBy(e.target.value)}
                 aria-label="Filter tokens by usage"
               >

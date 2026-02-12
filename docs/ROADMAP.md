@@ -2,10 +2,10 @@
 
 ## Next
 - Split `src/sections/TokensSection.tsx` table rows/actions into smaller components.
-- Add shareable URL state for token-table filters (query/group/used-by).
 - Expand Playwright coverage for reduced-transparency/motion toggles.
 
 ## Shipped
+- Token table filters now sync to URL query state (`tokenQuery`/`tokenGroup`/`tokenUsedBy`) for shareable views.
 - CI now enforces a lightweight JS/CSS bundle-size budget check for regression visibility.
 - Playwright smoke now verifies Ctrl/Cmd+Enter saves from token description textarea edits.
 - Token overrides now persist in browser storage and hydrate safely on reload.
