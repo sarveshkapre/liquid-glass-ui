@@ -1,19 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTokenOverrides } from '../hooks/useTokenOverrides'
 import { TokenImportDialog } from './TokenImportDialog'
+import { TokenTableRow } from './TokenTableRow'
+import type { TokenItem } from './TokenTableRow'
 import tokenData from '../tokens.json'
 import { copyToClipboard } from '../utils/clipboard'
 import { tryDownloadTextFile } from '../utils/download'
 import type { ImportEditsResult } from '../utils/tokenEdits'
 import { parseTokenEditsJson, serializeTokenEditsFileV1 } from '../utils/tokenEdits'
 import { buildTokensCsv } from '../utils/tokensCsv'
-
-type TokenItem = {
-  name: string
-  value: string
-  description: string
-  usedBy?: string[]
-}
 
 const baseTokens = tokenData as TokenItem[]
 const allowedTokenNames = new Set(baseTokens.map((token) => token.name))
@@ -152,6 +147,50 @@ function TokensSection({ announce }: Props) {
   const cancelTokenEdit = () => {
     setEditingTokenName(null)
     announce('Canceled token edit')
+  }
+
+  const startTokenEdit = (token: TokenItem) => {
+    setEditingTokenName(token.name)
+    setEditValue(token.value)
+    setEditDescription(token.description)
+    setEditUsedBy((token.usedBy ?? []).join(', '))
+  }
+
+  const copyTokenValue = async (token: TokenItem) => {
+    try {
+      await copyToClipboard(token.value)
+      announce(`Copied ${token.name} value`)
+    } catch {
+      announce('Copy failed. Please try again.')
+    }
+  }
+
+  const copyTokenCss = async (token: TokenItem) => {
+    const css = `${toCssVarName(token.name)}: ${token.value};`
+    try {
+      await copyToClipboard(css)
+      announce(`Copied ${token.name} CSS`)
+    } catch {
+      announce('Copy failed. Please try again.')
+    }
+  }
+
+  const copyTokenJson = async (token: TokenItem) => {
+    try {
+      await copyToClipboard(toTokenJson(token))
+      announce(`Copied ${token.name} JSON`)
+    } catch {
+      announce('Copy failed. Please try again.')
+    }
+  }
+
+  const copyTokenRow = async (token: TokenItem) => {
+    try {
+      await copyToClipboard(toTokenRowText(token))
+      announce(`Copied ${token.name} row`)
+    } catch {
+      announce('Copy failed. Please try again.')
+    }
   }
 
   const tokenGroupOptions = useMemo(() => {
@@ -308,14 +347,7 @@ function TokensSection({ announce }: Props) {
                 className="token-copy"
                 type="button"
                 aria-label={`Copy value for ${token.name}`}
-                onClick={async () => {
-                  try {
-                    await copyToClipboard(token.value)
-                    announce(`Copied ${token.name} value`)
-                  } catch {
-                    announce('Copy failed. Please try again.')
-                  }
-                }}
+                onClick={() => void copyTokenValue(token)}
               >
                 Copy value
               </button>
@@ -323,15 +355,7 @@ function TokensSection({ announce }: Props) {
                 className="token-copy subtle"
                 type="button"
                 aria-label={`Copy CSS snippet for ${token.name}`}
-                onClick={async () => {
-                  const css = `${toCssVarName(token.name)}: ${token.value};`
-                  try {
-                    await copyToClipboard(css)
-                    announce(`Copied ${token.name} CSS`)
-                  } catch {
-                    announce('Copy failed. Please try again.')
-                  }
-                }}
+                onClick={() => void copyTokenCss(token)}
               >
                 Copy CSS
               </button>
@@ -339,14 +363,7 @@ function TokensSection({ announce }: Props) {
                 className="token-copy subtle"
                 type="button"
                 aria-label={`Copy JSON for ${token.name}`}
-                onClick={async () => {
-                  try {
-                    await copyToClipboard(toTokenJson(token))
-                    announce(`Copied ${token.name} JSON`)
-                  } catch {
-                    announce('Copy failed. Please try again.')
-                  }
-                }}
+                onClick={() => void copyTokenJson(token)}
               >
                 Copy JSON
               </button>
@@ -566,189 +583,33 @@ function TokensSection({ announce }: Props) {
               </thead>
               <tbody>
                 {filteredTokens.map((token) => (
-                  <tr key={token.name}>
-                    <th scope="row">{token.name}</th>
-                    <td className="mono">
-                      {editingTokenName === token.name ? (
-                        <input
-                          className="token-table-input"
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter') {
-                              event.preventDefault()
-                              saveTokenEdit(token.name)
-                            }
-                            if (event.key === 'Escape') {
-                              event.preventDefault()
-                              cancelTokenEdit()
-                            }
-                          }}
-                          aria-describedby={tokenShortcutsGuideId}
-                          aria-label={`Edit value for ${token.name}`}
-                        />
-                      ) : (
-                        token.value
-                      )}
-                    </td>
-                    <td>
-                      {editingTokenName === token.name ? (
-                        <div className="token-table-edit">
-                          <textarea
-                            className="token-table-textarea"
-                            value={editDescription}
-                            onChange={(e) => setEditDescription(e.target.value)}
-                            onKeyDown={(event) => {
-                              if (event.key === 'Escape') {
-                                event.preventDefault()
-                                cancelTokenEdit()
-                              }
-                              if (
-                                event.key === 'Enter' &&
-                                (event.ctrlKey || event.metaKey)
-                              ) {
-                                event.preventDefault()
-                                saveTokenEdit(token.name)
-                              }
-                            }}
-                            aria-describedby={tokenShortcutsGuideId}
-                            aria-label={`Edit description for ${token.name}`}
-                          />
-                        </div>
-                      ) : (
-                        token.description
-                      )}
-                    </td>
-                    <td>
-                      {editingTokenName === token.name ? (
-                        <input
-                          className="token-table-input"
-                          value={editUsedBy}
-                          onChange={(e) => setEditUsedBy(e.target.value)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter') {
-                              event.preventDefault()
-                              saveTokenEdit(token.name)
-                            }
-                            if (event.key === 'Escape') {
-                              event.preventDefault()
-                              cancelTokenEdit()
-                            }
-                          }}
-                          aria-describedby={tokenShortcutsGuideId}
-                          aria-label={`Edit used by for ${token.name}`}
-                          placeholder="Comma-separated"
-                        />
-                      ) : token.usedBy && token.usedBy.length > 0 ? (
-                        <div className="token-table-usedby-pills">
-                          {token.usedBy.map((item) => (
-                            <span className="glass-pill" key={item}>
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="token-table-empty">—</span>
-                      )}
-                    </td>
-                    <td className="token-table-actions">
-                      <button
-                        className="token-copy token-copy--sm"
-                        type="button"
-                        aria-label={`Copy value for ${token.name} (table)`}
-                        onClick={async () => {
-                          try {
-                            await copyToClipboard(token.value)
-                            announce(`Copied ${token.name} value`)
-                          } catch {
-                            announce('Copy failed. Please try again.')
-                          }
-                        }}
-                      >
-                        Copy value
-                      </button>
-                      <button
-                        className="token-copy token-copy--sm subtle"
-                        type="button"
-                        aria-label={`Copy CSS snippet for ${token.name} (table)`}
-                        onClick={async () => {
-                          const css = `${toCssVarName(token.name)}: ${token.value};`
-                          try {
-                            await copyToClipboard(css)
-                            announce(`Copied ${token.name} CSS`)
-                          } catch {
-                            announce('Copy failed. Please try again.')
-                          }
-                        }}
-                      >
-                        Copy CSS
-                      </button>
-                      <button
-                        className="token-copy token-copy--sm subtle"
-                        type="button"
-                        aria-label={`Copy JSON for ${token.name} (table)`}
-                        onClick={async () => {
-                          try {
-                            await copyToClipboard(toTokenJson(token))
-                            announce(`Copied ${token.name} JSON`)
-                          } catch {
-                            announce('Copy failed. Please try again.')
-                          }
-                        }}
-                      >
-                        Copy JSON
-                      </button>
-                      <button
-                        className="token-copy token-copy--sm subtle"
-                        type="button"
-                        aria-label={`Copy row for ${token.name} (table)`}
-                        onClick={async () => {
-                          try {
-                            await copyToClipboard(toTokenRowText(token))
-                            announce(`Copied ${token.name} row`)
-                          } catch {
-                            announce('Copy failed. Please try again.')
-                          }
-                        }}
-                      >
-                        Copy row
-                      </button>
-                      {editingTokenName === token.name ? (
-                        <>
-                          <button
-                            className="token-copy token-copy--sm"
-                            type="button"
-                            aria-label={`Save edits for ${token.name}`}
-                            onClick={() => saveTokenEdit(token.name)}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className="token-copy token-copy--sm subtle"
-                            type="button"
-                            aria-label={`Cancel edits for ${token.name}`}
-                            onClick={cancelTokenEdit}
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className="token-copy token-copy--sm subtle"
-                          type="button"
-                          aria-label={`Edit ${token.name} (table)`}
-                          onClick={() => {
-                            setEditingTokenName(token.name)
-                            setEditValue(token.value)
-                            setEditDescription(token.description)
-                            setEditUsedBy((token.usedBy ?? []).join(', '))
-                          }}
-                        >
-                          Edit
-                        </button>
-                      )}
-                    </td>
-                  </tr>
+                  <TokenTableRow
+                    key={token.name}
+                    token={token}
+                    isEditing={editingTokenName === token.name}
+                    editValue={editValue}
+                    editDescription={editDescription}
+                    editUsedBy={editUsedBy}
+                    tokenShortcutsGuideId={tokenShortcutsGuideId}
+                    onEditValueChange={setEditValue}
+                    onEditDescriptionChange={setEditDescription}
+                    onEditUsedByChange={setEditUsedBy}
+                    onCopyValue={() => {
+                      void copyTokenValue(token)
+                    }}
+                    onCopyCss={() => {
+                      void copyTokenCss(token)
+                    }}
+                    onCopyJson={() => {
+                      void copyTokenJson(token)
+                    }}
+                    onCopyRow={() => {
+                      void copyTokenRow(token)
+                    }}
+                    onSave={() => saveTokenEdit(token.name)}
+                    onCancel={cancelTokenEdit}
+                    onStartEdit={() => startTokenEdit(token)}
+                  />
                 ))}
               </tbody>
             </table>

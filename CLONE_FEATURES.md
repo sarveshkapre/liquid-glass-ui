@@ -16,7 +16,7 @@
   Score: impact 3, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
 - [x] [P2] Add token-table URL state (query/group/used-by) for shareable filtered views.
   Score: impact 3, effort 3, strategic fit 4, differentiation 3, risk 2, confidence 3.
-- [ ] [P2] Split token table rows/actions into focused child components to reduce `TokensSection` complexity.
+- [x] [P2] Split token table rows/actions into focused child components to reduce `TokensSection` complexity.
   Score: impact 3, effort 3, strategic fit 4, differentiation 1, risk 2, confidence 3.
 - [ ] [P3] Add reduced-motion/reduced-transparency smoke assertions in Playwright.
   Score: impact 2, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
@@ -28,6 +28,8 @@
   Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-12: Split token-table row/actions markup into reusable `TokenTableRow` child component.
+  Evidence: `src/sections/TokenTableRow.tsx`, `src/sections/TokensSection.tsx`
 - [x] 2026-02-12: Added token-table URL state (`tokenQuery`/`tokenGroup`/`tokenUsedBy`) for shareable filtered views.
   Evidence: `src/sections/TokensSection.tsx`, `src/App.test.tsx`, `src/test/setup.ts`
 - [x] 2026-02-12: Added a lightweight JS/CSS bundle-size budget check and wired it into CI.

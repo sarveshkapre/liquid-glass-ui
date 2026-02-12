@@ -44,11 +44,28 @@
   - `CLONE_FEATURES.md`
   - `docs/ROADMAP.md`
   - `PLAN.md`
-- Commit: pending
+- Commit: `5a4e744`
 - Confidence: high
 - Trust label: verified-local
 
 ## Verification Evidence (2026-02-12 / Cycle 3)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
+
+## Entry 2026-02-12 / Cycle 4
+- Decision: Split token-table row/actions rendering into a dedicated `TokenTableRow` component.
+- Why: `TokensSection` had concentrated table edit/action complexity; extracting rows reduces maintenance risk while preserving behavior.
+- Evidence:
+  - `src/sections/TokenTableRow.tsx`
+  - `src/sections/TokensSection.tsx`
+  - `CLONE_FEATURES.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 4)
 - `npm run check` (pass)
 - `npm run test:e2e` (pass)
 

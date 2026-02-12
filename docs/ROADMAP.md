@@ -1,10 +1,10 @@
 # ROADMAP
 
 ## Next
-- Split `src/sections/TokensSection.tsx` table rows/actions into smaller components.
 - Expand Playwright coverage for reduced-transparency/motion toggles.
 
 ## Shipped
+- Split token-table row/actions into a dedicated `TokenTableRow` component.
 - Token table filters now sync to URL query state (`tokenQuery`/`tokenGroup`/`tokenUsedBy`) for shareable views.
 - CI now enforces a lightweight JS/CSS bundle-size budget check for regression visibility.
 - Playwright smoke now verifies Ctrl/Cmd+Enter saves from token description textarea edits.

@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-12: Split token-table rows/actions into a dedicated `TokenTableRow` component to reduce `TokensSection` complexity.
 - 2026-02-12: Added URL-synced token-table filters (`tokenQuery`, `tokenGroup`, `tokenUsedBy`) for shareable filtered views.
 - 2026-02-12: Added `size:check` JS/CSS bundle budget checks and wired them into CI.
 - 2026-02-12: Playwright smoke now verifies Ctrl/Cmd+Enter description-save in token table editing.
@@ -54,5 +55,4 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Split `src/sections/TokensSection.tsx` table rows/actions into smaller components.
 - Expand Playwright coverage for reduced-transparency/motion toggles.
