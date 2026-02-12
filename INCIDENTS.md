@@ -31,3 +31,14 @@
 - Evidence:
   - Local: `npm run check` (pass)
   - Remote: `ci` run `21862290540` (success)
+
+### 2026-02-12T20:00:49Z | Codex execution failure
+- Date: 2026-02-12T20:00:49Z
+- Trigger: Codex execution failure
+- Impact: Repo session did not complete cleanly
+- Root Cause: codex exec returned a non-zero status
+- Fix: Captured failure logs and kept repository in a recoverable state
+- Prevention Rule: Re-run with same pass context and inspect pass log before retrying
+- Evidence: pass_log=logs/20260212-101456-liquid-glass-ui-cycle-2.log
+- Commit: pending
+- Confidence: medium
