@@ -8,13 +8,31 @@
   - `CLONE_FEATURES.md`
   - `docs/ROADMAP.md`
   - `PLAN.md`
-- Commit: pending
+- Commit: `34c135f`
 - Confidence: high
 - Trust label: verified-local
 
 ## Verification Evidence (2026-02-12 / Cycle 1)
 - `npm run check` (pass)
 - `npm run test:e2e` (pass)
+
+## Entry 2026-02-12 / Cycle 2
+- Decision: Add a lightweight bundle-size budget gate in CI for built JS/CSS assets.
+- Why: This adds fast regression visibility for front-end payload growth with low maintenance overhead.
+- Evidence:
+  - `scripts/check-bundle-size.mjs`
+  - `.github/workflows/ci.yml`
+  - `package.json`
+  - `Makefile`
+  - `README.md`
+  - `docs/PROJECT.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 2)
+- `npm run check` (pass)
+- `npm run size:check` (pass)
 
 ## Entry 2026-02-11 / Cycle 1
 - Decision: Persist token overrides in browser storage with safe hydration/filtering and cleanup on reset.

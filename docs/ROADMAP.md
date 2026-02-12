@@ -6,6 +6,7 @@
 - Expand Playwright coverage for reduced-transparency/motion toggles.
 
 ## Shipped
+- CI now enforces a lightweight JS/CSS bundle-size budget check for regression visibility.
 - Playwright smoke now verifies Ctrl/Cmd+Enter saves from token description textarea edits.
 - Token overrides now persist in browser storage and hydrate safely on reload.
 - Token table adds explicit keyboard edit guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).

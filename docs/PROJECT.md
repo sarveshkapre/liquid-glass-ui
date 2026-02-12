@@ -5,6 +5,7 @@
 - Dev: `make dev`
 - Test: `make test`
 - Browser smoke test: `make test-e2e` (or `npm run test:e2e`)
+- Bundle budget check: `make size-check` (or `npm run size:check`, requires `dist/` from build)
 - Lint: `make lint`
 - Typecheck: `make typecheck`
 - Build: `make build`

@@ -1,4 +1,4 @@
-.PHONY: setup dev test test-e2e lint typecheck build check release
+.PHONY: setup dev test test-e2e size-check lint typecheck build check release
 
 setup:
 	npm install
@@ -11,6 +11,9 @@ test:
 
 test-e2e:
 	npm run test:e2e
+
+size-check:
+	npm run size:check
 
 lint:
 	npm run lint

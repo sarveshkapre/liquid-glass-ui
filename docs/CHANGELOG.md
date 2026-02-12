@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- Added `npm run size:check` bundle-size budget checks for built JS/CSS assets and wired them into CI.
 - Token overrides now persist in browser storage and hydrate safely on reload.
 - Token table editing adds explicit keyboard guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).
 - Token import dialog extracted into `TokenImportDialog` with a schema link to `public/schemas/liquid-glass-token-edits.v1.schema.json`.

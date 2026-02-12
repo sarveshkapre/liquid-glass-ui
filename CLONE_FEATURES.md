@@ -12,7 +12,7 @@
 ## Candidate Features To Do
 - [x] [P1] Add Playwright coverage for Ctrl/Cmd+Enter save from description textarea.
   Score: impact 3, effort 2, strategic fit 4, differentiation 2, risk 2, confidence 4.
-- [ ] [P2] Add a lightweight bundle-size budget check in CI for regression visibility.
+- [x] [P2] Add a lightweight bundle-size budget check in CI for regression visibility.
   Score: impact 3, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
 - [ ] [P2] Add token-table URL state (query/group/used-by) for shareable filtered views.
   Score: impact 3, effort 3, strategic fit 4, differentiation 3, risk 2, confidence 3.
@@ -28,6 +28,8 @@
   Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-12: Added a lightweight JS/CSS bundle-size budget check and wired it into CI.
+  Evidence: `scripts/check-bundle-size.mjs`, `.github/workflows/ci.yml`, `package.json`, `Makefile`
 - [x] 2026-02-12: Added Playwright smoke coverage for saving token descriptions with Ctrl/Cmd+Enter.
   Evidence: `tests/e2e/token-table-smoke.spec.ts`
 - [x] 2026-02-11: Persisted local token overrides to browser storage with safe hydration/filtering and cleanup on reset.

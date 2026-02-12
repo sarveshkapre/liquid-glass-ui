@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-12: Added `size:check` JS/CSS bundle budget checks and wired them into CI.
 - 2026-02-12: Playwright smoke now verifies Ctrl/Cmd+Enter description-save in token table editing.
 - 2026-02-11: Token overrides now persist in browser storage and hydrate safely on reload.
 - 2026-02-11: Token table editing adds keyboard guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).

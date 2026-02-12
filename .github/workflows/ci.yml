@@ -25,6 +25,9 @@ jobs:
         run: npm ci
       - name: Quality gate
         run: npm run check
+      - name: Bundle size budget check
+        if: matrix.node-version == '20.19.0'
+        run: npm run size:check
 
   ui-smoke:
     name: ui smoke (Playwright)
