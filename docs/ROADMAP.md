@@ -1,9 +1,10 @@
 # ROADMAP
 
 ## Next
-- Expand Playwright coverage for reduced-transparency/motion toggles.
+- Extract table copy/edit handlers into reusable helpers to cut action duplication across views.
 
 ## Shipped
+- Playwright smoke now asserts reduced-motion and reduced-transparency toggles.
 - Split token-table row/actions into a dedicated `TokenTableRow` component.
 - Token table filters now sync to URL query state (`tokenQuery`/`tokenGroup`/`tokenUsedBy`) for shareable views.
 - CI now enforces a lightweight JS/CSS bundle-size budget check for regression visibility.

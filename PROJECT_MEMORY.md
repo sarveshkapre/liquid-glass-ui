@@ -61,11 +61,27 @@
   - `CLONE_FEATURES.md`
   - `docs/ROADMAP.md`
   - `PLAN.md`
-- Commit: pending
+- Commit: `df32b00`
 - Confidence: high
 - Trust label: verified-local
 
 ## Verification Evidence (2026-02-12 / Cycle 4)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
+
+## Entry 2026-02-12 / Cycle 5
+- Decision: Extend Playwright smoke coverage to include reduced-motion and reduced-transparency toggles.
+- Why: Accessibility preference toggles are user-visible behavior and should be guarded by browser-level regression checks.
+- Evidence:
+  - `tests/e2e/token-table-smoke.spec.ts`
+  - `CLONE_FEATURES.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 5)
 - `npm run check` (pass)
 - `npm run test:e2e` (pass)
 

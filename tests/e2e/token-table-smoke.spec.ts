@@ -6,6 +6,31 @@ test('token table edit/import/export smoke path', async ({ page }) => {
 
   await page.goto('/')
 
+  const html = page.locator('html')
+  const initialMotion = await html.getAttribute('data-motion')
+  await page
+    .getByRole('button', { name: /switch to full motion|switch to reduced motion/i })
+    .click()
+  const updatedMotion = await html.getAttribute('data-motion')
+  expect(updatedMotion).not.toBe(initialMotion)
+  expect(updatedMotion).not.toBeNull()
+  expect(await page.evaluate(() => window.localStorage.getItem('lg-motion'))).toBe(
+    updatedMotion,
+  )
+
+  const initialTransparency = await html.getAttribute('data-transparency')
+  await page
+    .getByRole('button', {
+      name: /switch to full transparency|switch to reduced transparency/i,
+    })
+    .click()
+  const updatedTransparency = await html.getAttribute('data-transparency')
+  expect(updatedTransparency).not.toBe(initialTransparency)
+  expect(updatedTransparency).not.toBeNull()
+  expect(await page.evaluate(() => window.localStorage.getItem('lg-transparency'))).toBe(
+    updatedTransparency,
+  )
+
   const table = page.getByRole('table', { name: /token table/i })
   await expect(table).toBeVisible()
 
