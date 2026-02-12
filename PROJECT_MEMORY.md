@@ -1,5 +1,21 @@
 # Project Memory
 
+## Entry 2026-02-12 / Cycle 1
+- Decision: Add browser smoke coverage for saving token description edits with Ctrl/Cmd+Enter.
+- Why: This was the top-priority pending backlog item and closes a keyboard-editing regression gap for the table textarea workflow.
+- Evidence:
+  - `tests/e2e/token-table-smoke.spec.ts`
+  - `CLONE_FEATURES.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 1)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
+
 ## Entry 2026-02-11 / Cycle 1
 - Decision: Persist token overrides in browser storage with safe hydration/filtering and cleanup on reset.
 - Why: Local token editing is a core workflow; losing edits on refresh reduced product utility and perceived reliability.

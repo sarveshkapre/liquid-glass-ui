@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-12: Playwright smoke now verifies Ctrl/Cmd+Enter description-save in token table editing.
 - 2026-02-11: Token overrides now persist in browser storage and hydrate safely on reload.
 - 2026-02-11: Token table editing adds keyboard guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).
 - 2026-02-11: Token import dialog was extracted into `TokenImportDialog` with a schema link.
@@ -53,4 +54,4 @@ See `docs/PROJECT.md` for the full list. Common:
 ## Next
 - Split `src/sections/TokensSection.tsx` table rows/actions into smaller components.
 - Add shareable URL state for token-table filters (query/group/used-by).
-- Expand Playwright coverage for Ctrl/Cmd+Enter description-save and reduced-transparency/motion toggles.
+- Expand Playwright coverage for reduced-transparency/motion toggles.

@@ -3,9 +3,10 @@
 ## Next
 - Split `src/sections/TokensSection.tsx` table rows/actions into smaller components.
 - Add shareable URL state for token-table filters (query/group/used-by).
-- Expand Playwright coverage for Ctrl/Cmd+Enter description-save and reduced-transparency/motion toggles.
+- Expand Playwright coverage for reduced-transparency/motion toggles.
 
 ## Shipped
+- Playwright smoke now verifies Ctrl/Cmd+Enter saves from token description textarea edits.
 - Token overrides now persist in browser storage and hydrate safely on reload.
 - Token table adds explicit keyboard edit guide and save/cancel shortcuts (Enter/Escape/Ctrl+Enter).
 - Token import dialog extracted into a dedicated component with schema link.

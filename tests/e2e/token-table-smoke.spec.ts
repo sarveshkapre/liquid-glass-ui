@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test'
 
 test('token table edit/import/export smoke path', async ({ page }) => {
+  const descriptionSaveShortcut =
+    process.platform === 'darwin' ? 'Meta+Enter' : 'Control+Enter'
+
   await page.goto('/')
 
   const table = page.getByRole('table', { name: /token table/i })
@@ -39,6 +42,14 @@ test('token table edit/import/export smoke path', async ({ page }) => {
 
   await page.getByRole('button', { name: /redo last token edit/i }).click()
   await expect(accentCoralRow).toContainText('#000000')
+
+  await accentCoralRow.getByRole('button', { name: 'Edit accent.coral (table)' }).click()
+  const editDescriptionTextarea = page.getByRole('textbox', {
+    name: 'Edit description for accent.coral',
+  })
+  await editDescriptionTextarea.fill('Saved from description shortcut')
+  await editDescriptionTextarea.press(descriptionSaveShortcut)
+  await expect(accentCoralRow).toContainText('Saved from description shortcut')
 
   const editsDownloadPromise = page.waitForEvent('download')
   await page.getByRole('button', { name: /export local token edits as json/i }).click()

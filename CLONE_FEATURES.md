@@ -10,7 +10,7 @@
 - Bounded market scan (untrusted): Apple HIG accessibility settings, Microsoft Fluent acrylic/material guidance, DTCG format + Style Dictionary workflow
 
 ## Candidate Features To Do
-- [ ] [P1] Add Playwright coverage for Ctrl/Cmd+Enter save from description textarea.
+- [x] [P1] Add Playwright coverage for Ctrl/Cmd+Enter save from description textarea.
   Score: impact 3, effort 2, strategic fit 4, differentiation 2, risk 2, confidence 4.
 - [ ] [P2] Add a lightweight bundle-size budget check in CI for regression visibility.
   Score: impact 3, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
@@ -28,6 +28,8 @@
   Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-12: Added Playwright smoke coverage for saving token descriptions with Ctrl/Cmd+Enter.
+  Evidence: `tests/e2e/token-table-smoke.spec.ts`
 - [x] 2026-02-11: Persisted local token overrides to browser storage with safe hydration/filtering and cleanup on reset.
   Evidence: `src/hooks/useTokenOverrides.ts`, `src/hooks/useTokenOverrides.test.tsx`, `src/test/setup.ts`, `src/sections/TokensSection.tsx` (commit `a6ec9c6`)
 - [x] 2026-02-11: Expanded keyboard editing UX with explicit save/cancel shortcuts and an in-UI keyboard guide.
