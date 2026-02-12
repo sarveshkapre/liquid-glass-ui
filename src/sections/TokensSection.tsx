@@ -8,6 +8,12 @@ import { copyToClipboard } from '../utils/clipboard'
 import { tryDownloadTextFile } from '../utils/download'
 import type { ImportEditsResult } from '../utils/tokenEdits'
 import { parseTokenEditsJson, serializeTokenEditsFileV1 } from '../utils/tokenEdits'
+import {
+  buildTokenCopySuccessMessage,
+  buildTokenCopyText,
+  toEditableUsedByValue,
+} from '../utils/tokenActions'
+import type { TokenCopyFormat } from '../utils/tokenActions'
 import { buildTokensCsv } from '../utils/tokensCsv'
 
 const baseTokens = tokenData as TokenItem[]
@@ -16,19 +22,6 @@ const tokenShortcutsGuideId = 'token-table-shortcuts-guide'
 const tokenQueryParamKey = 'tokenQuery'
 const tokenGroupParamKey = 'tokenGroup'
 const tokenUsedByParamKey = 'tokenUsedBy'
-
-function toCssVarName(tokenName: string) {
-  return `--lg-${tokenName.replaceAll('.', '-')}`
-}
-
-function toTokenJson(token: TokenItem) {
-  return `${JSON.stringify(token, null, 2)}\n`
-}
-
-function toTokenRowText(token: TokenItem) {
-  const usedBy = (token.usedBy ?? []).join('; ')
-  return `${token.name}\t${token.value}\t${token.description}\t${usedBy}\n`
-}
 
 function readTokenTableFiltersFromUrl() {
   if (typeof window === 'undefined') {
@@ -153,41 +146,13 @@ function TokensSection({ announce }: Props) {
     setEditingTokenName(token.name)
     setEditValue(token.value)
     setEditDescription(token.description)
-    setEditUsedBy((token.usedBy ?? []).join(', '))
+    setEditUsedBy(toEditableUsedByValue(token.usedBy))
   }
 
-  const copyTokenValue = async (token: TokenItem) => {
+  const copyToken = async (token: TokenItem, format: TokenCopyFormat) => {
     try {
-      await copyToClipboard(token.value)
-      announce(`Copied ${token.name} value`)
-    } catch {
-      announce('Copy failed. Please try again.')
-    }
-  }
-
-  const copyTokenCss = async (token: TokenItem) => {
-    const css = `${toCssVarName(token.name)}: ${token.value};`
-    try {
-      await copyToClipboard(css)
-      announce(`Copied ${token.name} CSS`)
-    } catch {
-      announce('Copy failed. Please try again.')
-    }
-  }
-
-  const copyTokenJson = async (token: TokenItem) => {
-    try {
-      await copyToClipboard(toTokenJson(token))
-      announce(`Copied ${token.name} JSON`)
-    } catch {
-      announce('Copy failed. Please try again.')
-    }
-  }
-
-  const copyTokenRow = async (token: TokenItem) => {
-    try {
-      await copyToClipboard(toTokenRowText(token))
-      announce(`Copied ${token.name} row`)
+      await copyToClipboard(buildTokenCopyText(token, format))
+      announce(buildTokenCopySuccessMessage(token.name, format))
     } catch {
       announce('Copy failed. Please try again.')
     }
@@ -347,7 +312,7 @@ function TokensSection({ announce }: Props) {
                 className="token-copy"
                 type="button"
                 aria-label={`Copy value for ${token.name}`}
-                onClick={() => void copyTokenValue(token)}
+                onClick={() => void copyToken(token, 'value')}
               >
                 Copy value
               </button>
@@ -355,7 +320,7 @@ function TokensSection({ announce }: Props) {
                 className="token-copy subtle"
                 type="button"
                 aria-label={`Copy CSS snippet for ${token.name}`}
-                onClick={() => void copyTokenCss(token)}
+                onClick={() => void copyToken(token, 'css')}
               >
                 Copy CSS
               </button>
@@ -363,7 +328,7 @@ function TokensSection({ announce }: Props) {
                 className="token-copy subtle"
                 type="button"
                 aria-label={`Copy JSON for ${token.name}`}
-                onClick={() => void copyTokenJson(token)}
+                onClick={() => void copyToken(token, 'json')}
               >
                 Copy JSON
               </button>
@@ -595,16 +560,16 @@ function TokensSection({ announce }: Props) {
                     onEditDescriptionChange={setEditDescription}
                     onEditUsedByChange={setEditUsedBy}
                     onCopyValue={() => {
-                      void copyTokenValue(token)
+                      void copyToken(token, 'value')
                     }}
                     onCopyCss={() => {
-                      void copyTokenCss(token)
+                      void copyToken(token, 'css')
                     }}
                     onCopyJson={() => {
-                      void copyTokenJson(token)
+                      void copyToken(token, 'json')
                     }}
                     onCopyRow={() => {
-                      void copyTokenRow(token)
+                      void copyToken(token, 'row')
                     }}
                     onSave={() => saveTokenEdit(token.name)}
                     onCancel={cancelTokenEdit}

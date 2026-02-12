@@ -77,11 +77,29 @@
   - `CLONE_FEATURES.md`
   - `docs/ROADMAP.md`
   - `PLAN.md`
-- Commit: pending
+- Commit: `0ddb6a2`
 - Confidence: high
 - Trust label: verified-local
 
 ## Verification Evidence (2026-02-12 / Cycle 5)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
+
+## Entry 2026-02-12 / Cycle 6
+- Decision: Extract token copy/edit action formatting into reusable utility helpers.
+- Why: Shared helpers reduce duplication across token cards/table actions and make formatting behavior unit-testable.
+- Evidence:
+  - `src/utils/tokenActions.ts`
+  - `src/utils/tokenActions.test.ts`
+  - `src/sections/TokensSection.tsx`
+  - `CLONE_FEATURES.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-12 / Cycle 6)
 - `npm run check` (pass)
 - `npm run test:e2e` (pass)
 

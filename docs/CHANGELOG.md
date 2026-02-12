@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- Extracted token copy/edit action formatting into shared helpers with unit coverage.
 - Expanded Playwright smoke coverage with reduced-motion and reduced-transparency toggle assertions.
 - Split token-table row/actions markup into a dedicated `TokenTableRow` component.
 - Token table filters now sync with URL query params (`tokenQuery`, `tokenGroup`, `tokenUsedBy`) for shareable views.

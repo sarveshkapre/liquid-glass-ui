@@ -20,7 +20,7 @@
   Score: impact 3, effort 3, strategic fit 4, differentiation 1, risk 2, confidence 3.
 - [x] [P3] Add reduced-motion/reduced-transparency smoke assertions in Playwright.
   Score: impact 2, effort 2, strategic fit 3, differentiation 2, risk 2, confidence 3.
-- [ ] [P3] Extract token-row action handlers into reusable helpers to cut duplication in table/card views.
+- [x] [P3] Extract token-row action handlers into reusable helpers to cut duplication in table/card views.
   Score: impact 2, effort 3, strategic fit 4, differentiation 1, risk 2, confidence 3.
 - [ ] [P3] Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
   Score: impact 2, effort 4, strategic fit 3, differentiation 3, risk 3, confidence 2.
@@ -28,6 +28,8 @@
   Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-12: Extracted token copy/edit action formatting into reusable token-action helpers.
+  Evidence: `src/utils/tokenActions.ts`, `src/sections/TokensSection.tsx`, `src/utils/tokenActions.test.ts`
 - [x] 2026-02-12: Added Playwright smoke assertions for reduced-motion and reduced-transparency toggles.
   Evidence: `tests/e2e/token-table-smoke.spec.ts`
 - [x] 2026-02-12: Split token-table row/actions markup into reusable `TokenTableRow` child component.

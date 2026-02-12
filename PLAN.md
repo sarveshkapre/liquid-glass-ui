@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-12: Extracted token copy/edit action formatting into shared helpers (`src/utils/tokenActions.ts`) with unit tests.
 - 2026-02-12: Expanded Playwright smoke coverage to assert reduced-motion and reduced-transparency toggles.
 - 2026-02-12: Split token-table rows/actions into a dedicated `TokenTableRow` component to reduce `TokensSection` complexity.
 - 2026-02-12: Added URL-synced token-table filters (`tokenQuery`, `tokenGroup`, `tokenUsedBy`) for shareable filtered views.
@@ -56,4 +57,5 @@ See `docs/PROJECT.md` for the full list. Common:
 - 2026-02-01: Baseline landing page with tokens, components, a11y notes, theme toggle, and tests.
 
 ## Next
-- Extract table copy/edit handlers into reusable helpers to cut action duplication across views.
+- Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
+- Add docs for token-edit file lifecycle and migration strategy (`v1 -> v2`).

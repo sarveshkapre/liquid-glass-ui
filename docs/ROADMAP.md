@@ -1,9 +1,11 @@
 # ROADMAP
 
 ## Next
-- Extract table copy/edit handlers into reusable helpers to cut action duplication across views.
+- Add optional token alias metadata support (`$extensions`) for broader DTCG compatibility.
+- Add docs for token-edit file lifecycle and migration strategy (`v1 -> v2`).
 
 ## Shipped
+- Token copy/edit action formatting now uses shared helpers with unit coverage.
 - Playwright smoke now asserts reduced-motion and reduced-transparency toggles.
 - Split token-table row/actions into a dedicated `TokenTableRow` component.
 - Token table filters now sync to URL query state (`tokenQuery`/`tokenGroup`/`tokenUsedBy`) for shareable views.
