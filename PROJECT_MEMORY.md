@@ -1,5 +1,30 @@
 # Project Memory
 
+## Entry 2026-02-17 / Cycle 2
+- Decision: Migrate all GitHub workflows to self-hosted runners and harden CI runner assumptions for local execution.
+- Why: GitHub-hosted billing issues were blocking CI; self-hosted execution restores pipeline continuity without changing billing settings.
+- Evidence:
+  - `.github/workflows/ci.yml`
+  - `.github/workflows/codeql.yml`
+  - `.github/workflows/dependency-review.yml`
+  - `.github/workflows/gitleaks.yml`
+  - `docs/PROJECT.md`
+  - `README.md`
+  - `docs/CHANGELOG.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-17 / Cycle 2)
+- `actionlint .github/workflows/*.yml` (pass)
+- `npm ci` (pass)
+- `npm run check` (pass)
+- `npm run size:check` (pass)
+- `npx playwright install chromium` (pass)
+- `npm run test:e2e` (pass)
+- `gitleaks detect --no-git -v` (pass)
+- Note: `dependency-review` and `codeql` jobs execute GitHub service-side APIs/actions and are validated here via workflow lint + prerequisite documentation; full execution requires the registered repository self-hosted runner processing GitHub webhook events.
+
 ## Entry 2026-02-17 / Cycle 1
 - Decision: Harden token-table filter behavior with browser history synchronization, active filter chips, and a clear-filters recovery empty state.
 - Why: The token table is the primary daily workflow; users need reliable URL-backed navigation and a fast recovery path when filters return zero results.

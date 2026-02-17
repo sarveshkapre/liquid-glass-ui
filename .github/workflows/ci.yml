@@ -8,7 +8,7 @@ on:
 jobs:
   check:
     name: check (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -31,7 +31,7 @@ jobs:
 
   ui-smoke:
     name: ui smoke (Playwright)
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: check
     steps:
       - name: Checkout
@@ -44,7 +44,7 @@ jobs:
       - name: Install
         run: npm ci
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
       - name: Run browser smoke tests
         run: npm run test:e2e
       - name: Upload Playwright artifacts
