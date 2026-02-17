@@ -21,6 +21,7 @@ See `docs/PROJECT.md` for the full list. Common:
 - Quality gate: `make check`
 
 ## Shipped (most recent first)
+- 2026-02-17: Hardened token-table filter UX with browser history sync, active filter chips, and clear-filters empty-state recovery.
 - 2026-02-12: Added optional `$extensions` metadata support in token-edits parsing/persistence for broader DTCG compatibility.
 - 2026-02-12: Added token-edit lifecycle and `v1 -> v2` migration strategy docs (`docs/TOKEN_EDITS.md`).
 - 2026-02-12: Extracted token copy/edit action formatting into shared helpers (`src/utils/tokenActions.ts`) with unit tests.

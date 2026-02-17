@@ -14,6 +14,9 @@ Apple-inspired glassmorphism component showcase with tokens, a11y guidance, and 
 - Local token overrides persist in browser storage (resettable in-app).
 - Token table keyboard guide with save/cancel shortcuts for inline edits.
 - Token table filters can be shared via URL query state.
+- Token table filters stay in sync with browser back/forward navigation.
+- Token table surfaces active filter chips with one-click clear actions.
+- Token table empty states include a clear-filters recovery action.
 - Token-edits parser/persistence supports optional `$extensions` metadata fields.
 
 ## Quickstart

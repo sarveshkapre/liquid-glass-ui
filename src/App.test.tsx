@@ -163,6 +163,76 @@ describe('App', () => {
     expect(cleared.get('tokenUsedBy')).toBeNull()
   })
 
+  it('syncs token table filters from browser history navigation', async () => {
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('searchbox', { name: /search tokens/i })).toHaveValue('')
+    })
+
+    window.history.pushState(
+      {},
+      '',
+      '/?tokenQuery=glass&tokenGroup=glass&tokenUsedBy=Buttons',
+    )
+    window.dispatchEvent(new PopStateEvent('popstate'))
+
+    await waitFor(() => {
+      expect(screen.getByRole('searchbox', { name: /search tokens/i })).toHaveValue('glass')
+      expect(screen.getByRole('combobox', { name: /filter tokens by group/i })).toHaveValue(
+        'glass',
+      )
+      expect(screen.getByRole('combobox', { name: /filter tokens by usage/i })).toHaveValue(
+        'Buttons',
+      )
+    })
+  })
+
+  it('shows active token-filter chips and clears them individually', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const search = screen.getByRole('searchbox', { name: /search tokens/i })
+    const group = screen.getByRole('combobox', { name: /filter tokens by group/i })
+    const usedBy = screen.getByRole('combobox', { name: /filter tokens by usage/i })
+
+    await user.type(search, 'accent')
+    await user.selectOptions(group, 'accent')
+    await user.selectOptions(usedBy, 'Buttons')
+
+    expect(screen.getByRole('button', { name: /clear search token filter/i })).toHaveTextContent(
+      'Search: accent',
+    )
+    expect(screen.getByRole('button', { name: /clear token group filter/i })).toHaveTextContent(
+      'Group: accent',
+    )
+    expect(screen.getByRole('button', { name: /clear token usage filter/i })).toHaveTextContent(
+      'Used by: Buttons',
+    )
+
+    await user.click(screen.getByRole('button', { name: /clear token group filter/i }))
+    expect(group).toHaveValue('all')
+    expect(
+      screen.queryByRole('button', { name: /clear token group filter/i }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows an empty-state recovery action when filters have no matches', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const search = screen.getByRole('searchbox', { name: /search tokens/i })
+    await user.type(search, 'does-not-exist')
+
+    expect(screen.getByText('Showing 0 of 6')).toBeInTheDocument()
+    expect(screen.getByText('No tokens match the current filters.')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /clear filters and show all tokens/i }))
+
+    expect(search).toHaveValue('')
+    expect(screen.getByText('Showing 6 of 6')).toBeInTheDocument()
+  })
+
   it('exports the filtered token table as CSV', async () => {
     const user = userEvent.setup()
 

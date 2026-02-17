@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## Unreleased
+- Hardened token-table filters with browser back/forward URL sync, active filter chips with individual clear actions, and a clear-filters empty-state recovery path.
 - Added optional `$extensions` metadata support in token-edits import/export schema and persistence sanitization.
 - Added `docs/TOKEN_EDITS.md` with token-edit lifecycle and planned `v1 -> v2` migration strategy.
 - Extracted token copy/edit action formatting into shared helpers with unit coverage.

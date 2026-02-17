@@ -4,6 +4,7 @@
 - Identify the next highest-impact product/quality feature after current backlog completion.
 
 ## Shipped
+- Token-table filters now stay synchronized with browser back/forward navigation and expose active filter chips + clear-filter empty states.
 - Token-edits import/persistence now supports optional `$extensions` metadata fields.
 - Added token-edit lifecycle and `v1 -> v2` migration strategy documentation (`docs/TOKEN_EDITS.md`).
 - Token copy/edit action formatting now uses shared helpers with unit coverage.

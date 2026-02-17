@@ -10,6 +10,8 @@
 - Bounded market scan (untrusted): Apple HIG accessibility settings, Microsoft Fluent acrylic/material guidance, DTCG format + Style Dictionary workflow
 
 ## Candidate Features To Do
+- [x] [P1] Harden token-table filter UX with popstate URL sync, active filter chips, and clear-filters empty states.
+  Score: impact 4, effort 3, strategic fit 4, differentiation 2, risk 2, confidence 3.
 - [x] [P1] Add Playwright coverage for Ctrl/Cmd+Enter save from description textarea.
   Score: impact 3, effort 2, strategic fit 4, differentiation 2, risk 2, confidence 4.
 - [x] [P2] Add a lightweight bundle-size budget check in CI for regression visibility.
@@ -28,6 +30,8 @@
   Score: impact 2, effort 2, strategic fit 3, differentiation 1, risk 1, confidence 4.
 
 ## Implemented
+- [x] 2026-02-17: Hardened token-table filter UX with browser history sync, active filter chips, and a clear-filters empty-state recovery action.
+  Evidence: `src/sections/TokensSection.tsx`, `src/App.css`, `src/App.test.tsx`, `tests/e2e/token-table-smoke.spec.ts`
 - [x] 2026-02-12: Added optional `$extensions` metadata support in token-edits parsing/persistence for broader DTCG compatibility.
   Evidence: `src/utils/tokenEdits.ts`, `src/hooks/useTokenOverrides.ts`, `public/schemas/liquid-glass-token-edits.v1.schema.json`
 - [x] 2026-02-12: Added token-edit lifecycle and `v1 -> v2` migration strategy documentation.

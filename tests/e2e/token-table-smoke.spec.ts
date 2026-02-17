@@ -34,6 +34,20 @@ test('token table edit/import/export smoke path', async ({ page }) => {
   const table = page.getByRole('table', { name: /token table/i })
   await expect(table).toBeVisible()
 
+  const searchInput = page.getByRole('searchbox', { name: /search tokens/i })
+  await searchInput.fill('does-not-exist')
+  await expect(page.getByText('Showing 0 of 6')).toBeVisible()
+  await expect(page.getByText('No tokens match the current filters.')).toBeVisible()
+  await page.getByRole('button', { name: /clear filters and show all tokens/i }).click()
+  await expect(page.getByText('Showing 6 of 6')).toBeVisible()
+
+  await searchInput.fill('accent')
+  await page.getByRole('combobox', { name: /filter tokens by group/i }).selectOption('accent')
+  await page.getByRole('combobox', { name: /filter tokens by usage/i }).selectOption('Buttons')
+  await expect(page.getByRole('button', { name: /clear all token table filters/i })).toBeVisible()
+  await page.getByRole('button', { name: /clear all token table filters/i }).click()
+  await expect(page.getByText('Showing 6 of 6')).toBeVisible()
+
   const accentCoralRow = table.getByRole('row', { name: /accent\.coral/i })
 
   await accentCoralRow.getByRole('button', { name: 'Edit accent.coral (table)' }).click()

@@ -480,6 +480,28 @@
   font-size: 0.9rem;
 }
 
+.token-table-active-filters {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--glass-bg-soft), transparent 25%);
+  padding: 10px 12px;
+}
+
+.token-table-active-filters-label {
+  font-size: 0.76rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.token-table-active-filters-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .token-table-meta-actions {
   display: flex;
   flex-wrap: wrap;
@@ -708,6 +730,20 @@
 
 .token-table-empty {
   color: var(--text-muted);
+}
+
+.token-table-empty-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  color: var(--text-muted);
+}
+
+.token-table-empty-state p {
+  margin: 0;
 }
 
 @media (max-width: 520px) {

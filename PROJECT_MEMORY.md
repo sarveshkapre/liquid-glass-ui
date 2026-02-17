@@ -1,5 +1,27 @@
 # Project Memory
 
+## Entry 2026-02-17 / Cycle 1
+- Decision: Harden token-table filter behavior with browser history synchronization, active filter chips, and a clear-filters recovery empty state.
+- Why: The token table is the primary daily workflow; users need reliable URL-backed navigation and a fast recovery path when filters return zero results.
+- Evidence:
+  - `src/sections/TokensSection.tsx`
+  - `src/App.css`
+  - `src/App.test.tsx`
+  - `tests/e2e/token-table-smoke.spec.ts`
+  - `README.md`
+  - `docs/CHANGELOG.md`
+  - `docs/ROADMAP.md`
+  - `PLAN.md`
+  - `CLONE_FEATURES.md`
+- Commit: pending
+- Confidence: high
+- Trust label: verified-local
+
+## Verification Evidence (2026-02-17 / Cycle 1)
+- `npm run test -- src/App.test.tsx` (pass)
+- `npm run check` (pass)
+- `npm run test:e2e` (pass)
+
 ## Entry 2026-02-12 / Cycle 1
 - Decision: Add browser smoke coverage for saving token description edits with Ctrl/Cmd+Enter.
 - Why: This was the top-priority pending backlog item and closes a keyboard-editing regression gap for the table textarea workflow.

@@ -23,7 +23,13 @@ const tokenQueryParamKey = 'tokenQuery'
 const tokenGroupParamKey = 'tokenGroup'
 const tokenUsedByParamKey = 'tokenUsedBy'
 
-function readTokenTableFiltersFromUrl() {
+type TokenTableFilters = {
+  tokenQuery: string
+  tokenGroup: string
+  tokenUsedBy: string
+}
+
+function readTokenTableFiltersFromUrl(): TokenTableFilters {
   if (typeof window === 'undefined') {
     return { tokenQuery: '', tokenGroup: 'all', tokenUsedBy: 'all' }
   }
@@ -36,11 +42,7 @@ function readTokenTableFiltersFromUrl() {
   }
 }
 
-function writeTokenTableFiltersToUrl(filters: {
-  tokenQuery: string
-  tokenGroup: string
-  tokenUsedBy: string
-}) {
+function writeTokenTableFiltersToUrl(filters: TokenTableFilters) {
   if (typeof window === 'undefined') return
 
   const url = new URL(window.location.href)
@@ -97,6 +99,7 @@ function TokensSection({ announce }: Props) {
   const [importOpen, setImportOpen] = useState(false)
   const [importJson, setImportJson] = useState('')
   const [isImportDragActive, setIsImportDragActive] = useState(false)
+  const hasTokenQuery = tokenQuery.trim().length > 0
 
   const tokens = useMemo(() => {
     return baseTokens.map((token) => {
@@ -174,6 +177,8 @@ function TokensSection({ announce }: Props) {
     tokenGroup === 'all' || tokenGroupOptions.includes(tokenGroup) ? tokenGroup : 'all'
   const resolvedTokenUsedBy =
     tokenUsedBy === 'all' || tokenUsedByOptions.includes(tokenUsedBy) ? tokenUsedBy : 'all'
+  const hasActiveTokenFilters =
+    hasTokenQuery || resolvedTokenGroup !== 'all' || resolvedTokenUsedBy !== 'all'
 
   useEffect(() => {
     writeTokenTableFiltersToUrl({
@@ -182,6 +187,18 @@ function TokensSection({ announce }: Props) {
       tokenUsedBy: resolvedTokenUsedBy,
     })
   }, [resolvedTokenGroup, resolvedTokenUsedBy, tokenQuery])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const filters = readTokenTableFiltersFromUrl()
+      setTokenQuery(filters.tokenQuery)
+      setTokenGroup(filters.tokenGroup)
+      setTokenUsedBy(filters.tokenUsedBy)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   const filteredTokens = useMemo(() => {
     const normalizedQuery = tokenQuery.trim().toLowerCase()
@@ -285,6 +302,12 @@ function TokensSection({ announce }: Props) {
     } catch {
       announce('Failed to read file')
     }
+  }
+
+  const clearTokenTableFilters = () => {
+    setTokenQuery('')
+    setTokenGroup('all')
+    setTokenUsedBy('all')
   }
 
   return (
@@ -422,6 +445,51 @@ function TokensSection({ announce }: Props) {
               </select>
             </label>
           </div>
+          {hasActiveTokenFilters ? (
+            <div className="token-table-active-filters" role="status" aria-live="polite">
+              <span className="token-table-active-filters-label">Active filters</span>
+              <div className="token-table-active-filters-actions">
+                {hasTokenQuery ? (
+                  <button
+                    className="token-copy token-copy--sm subtle"
+                    type="button"
+                    onClick={() => setTokenQuery('')}
+                    aria-label="Clear search token filter"
+                  >
+                    Search: {tokenQuery.trim()}
+                  </button>
+                ) : null}
+                {resolvedTokenGroup !== 'all' ? (
+                  <button
+                    className="token-copy token-copy--sm subtle"
+                    type="button"
+                    onClick={() => setTokenGroup('all')}
+                    aria-label="Clear token group filter"
+                  >
+                    Group: {resolvedTokenGroup}
+                  </button>
+                ) : null}
+                {resolvedTokenUsedBy !== 'all' ? (
+                  <button
+                    className="token-copy token-copy--sm subtle"
+                    type="button"
+                    onClick={() => setTokenUsedBy('all')}
+                    aria-label="Clear token usage filter"
+                  >
+                    Used by: {resolvedTokenUsedBy}
+                  </button>
+                ) : null}
+                <button
+                  className="token-copy token-copy--sm subtle"
+                  type="button"
+                  onClick={clearTokenTableFilters}
+                  aria-label="Clear all token table filters"
+                >
+                  Clear all
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           <div className="token-table-meta">
             <div role="status" aria-live="polite">
@@ -547,35 +615,53 @@ function TokensSection({ announce }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {filteredTokens.map((token) => (
-                  <TokenTableRow
-                    key={token.name}
-                    token={token}
-                    isEditing={editingTokenName === token.name}
-                    editValue={editValue}
-                    editDescription={editDescription}
-                    editUsedBy={editUsedBy}
-                    tokenShortcutsGuideId={tokenShortcutsGuideId}
-                    onEditValueChange={setEditValue}
-                    onEditDescriptionChange={setEditDescription}
-                    onEditUsedByChange={setEditUsedBy}
-                    onCopyValue={() => {
-                      void copyToken(token, 'value')
-                    }}
-                    onCopyCss={() => {
-                      void copyToken(token, 'css')
-                    }}
-                    onCopyJson={() => {
-                      void copyToken(token, 'json')
-                    }}
-                    onCopyRow={() => {
-                      void copyToken(token, 'row')
-                    }}
-                    onSave={() => saveTokenEdit(token.name)}
-                    onCancel={cancelTokenEdit}
-                    onStartEdit={() => startTokenEdit(token)}
-                  />
-                ))}
+                {filteredTokens.length === 0 ? (
+                  <tr>
+                    <td colSpan={5}>
+                      <div className="token-table-empty-state" role="status" aria-live="polite">
+                        <p>No tokens match the current filters.</p>
+                        <button
+                          className="token-copy token-copy--sm subtle"
+                          type="button"
+                          onClick={clearTokenTableFilters}
+                          aria-label="Clear filters and show all tokens"
+                        >
+                          Clear filters
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTokens.map((token) => (
+                    <TokenTableRow
+                      key={token.name}
+                      token={token}
+                      isEditing={editingTokenName === token.name}
+                      editValue={editValue}
+                      editDescription={editDescription}
+                      editUsedBy={editUsedBy}
+                      tokenShortcutsGuideId={tokenShortcutsGuideId}
+                      onEditValueChange={setEditValue}
+                      onEditDescriptionChange={setEditDescription}
+                      onEditUsedByChange={setEditUsedBy}
+                      onCopyValue={() => {
+                        void copyToken(token, 'value')
+                      }}
+                      onCopyCss={() => {
+                        void copyToken(token, 'css')
+                      }}
+                      onCopyJson={() => {
+                        void copyToken(token, 'json')
+                      }}
+                      onCopyRow={() => {
+                        void copyToken(token, 'row')
+                      }}
+                      onSave={() => saveTokenEdit(token.name)}
+                      onCancel={cancelTokenEdit}
+                      onStartEdit={() => startTokenEdit(token)}
+                    />
+                  ))
+                )}
               </tbody>
             </table>
           </div>
